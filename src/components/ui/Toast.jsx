@@ -12,10 +12,10 @@ export function Toast({ message, tone = 'info', onDismiss }) {
   }, [onDismiss]);
 
   const styles = {
-    info:    'border-slate-200 bg-white text-ink',
-    success: 'border-emerald-200 bg-emerald-50 text-safe',
-    warn:    'border-amber-200 bg-amber-50 text-warn',
-    crit:    'border-red-200 bg-red-50 text-crit',
+    info:    'border-[#374151] bg-[#1f2937] text-ink',
+    success: 'border-[#10b981]/40 bg-[#10b981]/10 text-emerald-300',
+    warn:    'border-[#f59e0b]/40 bg-[#f59e0b]/10 text-amber-300',
+    crit:    'border-[#ef4444]/40 bg-[#ef4444]/10 text-red-300',
   };
 
   const Icon = tone === 'success' ? CheckCircle : AlertCircle;

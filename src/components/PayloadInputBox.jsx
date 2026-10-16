@@ -41,7 +41,7 @@ export function PayloadInputBox({ payload, onChange, error, onClear, isAnalyzing
         aria-invalid={Boolean(error)}
         aria-describedby={error ? 'payload-error' : undefined}
         placeholder="Paste the SMS or WhatsApp message here..."
-        className="min-h-40 w-full resize-y rounded-2xl border border-slate-300 bg-white px-4 py-3 font-mono text-base leading-6 text-ink placeholder:font-sans placeholder:text-slate-400 focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
+        className="min-h-40 w-full resize-y rounded-2xl border border-[#374151] bg-[#1f2937] px-4 py-3 font-mono text-base leading-6 text-ink placeholder:font-sans placeholder:text-[#9ca3af] focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
       />
       {error && (
         <p id="payload-error" role="alert" className="flex items-center gap-2 text-sm font-medium text-crit">

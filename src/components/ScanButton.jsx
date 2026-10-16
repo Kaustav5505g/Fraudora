@@ -46,12 +46,12 @@ export function ScanButton({ isAnalyzing, isDisabled, onScan }) {
         )}
       </button>
       {!isAnalyzing && (
-        <p className="text-center text-xs text-slate-500">
+        <p className="text-center text-xs text-[#9ca3af]">
           Press Ctrl+Enter to check
         </p>
       )}
       {isAnalyzing && (
-        <ol aria-live="polite" aria-label="Checking message" className="space-y-1 rounded-xl bg-indigo-50/70 p-3">
+        <ol aria-live="polite" aria-label="Checking message" className="space-y-1 rounded-xl bg-indigo-500/10 p-3">
           {CHECK_STEPS.map((step, index) => {
             const completed = index < completedSteps;
             const current = index === completedSteps && completedSteps < CHECK_STEPS.length;

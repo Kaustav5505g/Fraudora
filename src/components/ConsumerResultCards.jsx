@@ -45,8 +45,8 @@ function getRisk(result) {
 function ResultCard({ title, icon: Icon, children, className = '' }) {
   return (
     <Card className={className}>
-      <div className="mb-4 flex items-center gap-3 border-b border-slate-100 pb-3">
-        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-accent">
+      <div className="mb-4 flex items-center gap-3 border-b border-[#374151] pb-3">
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-indigo-500/15 text-indigo-300">
           <Icon size={17} aria-hidden="true" />
         </span>
         <h2 className="text-base font-semibold text-ink">{title}</h2>
@@ -68,12 +68,12 @@ export function VerdictCard({ result, onNewScan }) {
   return (
     <Card
       className="border-2 p-5 sm:p-6"
-      style={{ backgroundColor: risk.tint, borderColor: risk.border }}
+      style={{ backgroundColor: `${risk.strong}1A`, borderColor: `${risk.strong}80` }}
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
           <span
-            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white"
+            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#0b0f19]"
             style={{ color: risk.strong }}
           >
             <Icon size={30} aria-hidden="true" />
@@ -90,13 +90,13 @@ export function VerdictCard({ result, onNewScan }) {
         <button
           type="button"
           onClick={onNewScan}
-          className="flex min-h-11 items-center justify-center rounded-xl border border-slate-300 bg-white px-4 text-sm font-semibold text-secondary transition-colors hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          className="flex min-h-11 items-center justify-center rounded-xl border border-[#374151] bg-[#1f2937] px-4 text-sm font-semibold text-secondary transition-colors hover:bg-[#374151] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         >
           Check another message
         </button>
       </div>
 
-      <div className="mt-5 rounded-xl bg-white/80 p-4">
+      <div className="mt-5 rounded-xl bg-[#0b0f19]/60 p-4">
         <div className="mb-2 flex items-center justify-between gap-3">
           <span className="text-sm font-semibold text-secondary">Scam risk</span>
           <span className="text-sm font-semibold tabular-nums text-ink">
@@ -104,7 +104,7 @@ export function VerdictCard({ result, onNewScan }) {
           </span>
         </div>
         <div
-          className="h-2.5 overflow-hidden rounded-full bg-slate-200"
+          className="h-2.5 overflow-hidden rounded-full bg-[#374151]"
           role="progressbar"
           aria-label="Scam risk score"
           aria-valuemin={0}
@@ -160,7 +160,7 @@ export function WhatToDoNowCard({ result, onToast }) {
       <ol className="space-y-3">
         {steps.map((step, index) => (
           <li key={`${index}-${step}`} className="flex gap-3 text-base leading-7 text-secondary">
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-sm font-bold text-accent">
+            <span             className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-indigo-500/15 text-sm font-bold text-indigo-300">
               {index + 1}
             </span>
             <span>{step}</span>
@@ -178,7 +178,7 @@ export function WhatToDoNowCard({ result, onToast }) {
         </a>
         <a
           href="tel:1930"
-          className="flex min-h-12 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-3 text-sm font-semibold text-ink hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          className="flex min-h-12 items-center justify-center gap-2 rounded-xl border border-[#374151] bg-[#1f2937] px-3 text-sm font-semibold text-ink hover:bg-[#374151] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         >
           Call 1930
         </a>
@@ -187,7 +187,7 @@ export function WhatToDoNowCard({ result, onToast }) {
           target="_blank"
           rel="noopener noreferrer"
           onClick={handleShare}
-          className="flex min-h-12 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-3 text-center text-sm font-semibold text-ink hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          className="flex min-h-12 items-center justify-center gap-2 rounded-xl border border-[#374151] bg-[#1f2937] px-3 text-center text-sm font-semibold text-ink hover:bg-[#374151] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         >
           Share warning with family <ExternalLink size={15} aria-hidden="true" />
         </a>
@@ -213,8 +213,8 @@ function highlightMessage(message, terms, risk) {
   if (escaped.length === 0) return message;
   const expression = new RegExp(`(${escaped.join('|')})`, 'gi');
   const markClass = risk === 'critical'
-    ? 'rounded bg-red-100 px-1 text-red-800'
-    : 'rounded bg-amber-100 px-1 text-amber-900';
+    ? 'rounded bg-[#ef4444]/15 px-1 text-red-200'
+    : 'rounded bg-[#f59e0b]/15 px-1 text-amber-200';
   return message.split(expression).map((part, index) => (
     terms.some((term) => part.toLowerCase() === term.toLowerCase())
       ? <mark key={`${index}-${part}`} className={markClass}>{part}</mark>
@@ -226,7 +226,7 @@ export function WhyWeThinkSoCard({ result }) {
   const Icon = result.riskLevel === 'safe' ? CheckCircle2 : AlertCircle;
   return (
     <ResultCard title="Why we think so" icon={CircleHelp}>
-      <div className="break-words rounded-xl bg-slate-50 p-4 font-mono text-base leading-7 text-ink">
+      <div className="break-words rounded-xl bg-[#0b0f19] p-4 font-mono text-base leading-7 text-ink">
         {result.riskLevel === 'safe'
           ? result.payload
           : highlightMessage(result.payload, result.highlightTerms, result.riskLevel)}
@@ -262,7 +262,7 @@ export function AnatomyTimeline({ result }) {
               {index < result.anatomy.length - 1 && (
                 <span aria-hidden="true" className="absolute left-[17px] top-9 h-[calc(100%+4px)] w-px bg-slate-200" />
               )}
-              <span className="relative z-10 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-accent">
+              <span className="relative z-10 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-500/15 text-indigo-300">
                 <Icon size={17} aria-hidden="true" />
               </span>
               <div className="min-w-0 pt-0.5">
@@ -311,18 +311,18 @@ export function LinkCard({ result }) {
   return (
     <ResultCard title="Check the link" icon={Link2}>
       <p className="text-sm font-medium text-secondary">Message link (not clickable)</p>
-      <p className="mt-1 break-all rounded-xl bg-red-50 px-3 py-2 text-sm leading-6 text-red-800">
+      <p className="mt-1 break-all rounded-xl bg-[#ef4444]/10 px-3 py-2 text-sm leading-6 text-red-200">
         {defangUrl(link.url)}
       </p>
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
-        <div className="rounded-xl bg-emerald-50 p-3">
-          <p className="flex items-center gap-1.5 text-sm font-semibold text-emerald-800">
+        <div className="rounded-xl bg-[#10b981]/10 p-3">
+          <p className="flex items-center gap-1.5 text-sm font-semibold text-emerald-300">
             <CheckCircle2 size={16} aria-hidden="true" /> Expected
           </p>
-          <p className="mt-1 break-words text-sm text-emerald-900">{link.expectedDomain}</p>
+          <p className="mt-1 break-words text-sm text-emerald-200">{link.expectedDomain}</p>
         </div>
-        <div className="rounded-xl bg-red-50 p-3">
-          <p className="flex items-center gap-1.5 text-sm font-semibold text-red-800">
+        <div className="rounded-xl bg-[#ef4444]/10 p-3">
+          <p className="flex items-center gap-1.5 text-sm font-semibold text-red-300">
             <XCircle size={16} aria-hidden="true" /> Actual
           </p>
           <p className="mt-1 text-sm leading-6"><DomainLabel domain={link.actualDomain} /></p>
@@ -338,7 +338,7 @@ export function LinkCard({ result }) {
 
 export function TechnicalDetails({ result }) {
   return (
-    <details className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_2px_12px_-4px_rgba(15,23,42,0.08)]">
+    <details className="overflow-hidden rounded-2xl border border-[#374151] bg-[#1f2937] shadow-[0_4px_20px_-6px_rgba(0,0,0,0.5)]">
       <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-5 py-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent sm:px-6">
         <span>
           <span className="block font-semibold text-ink">Technical details</span>
@@ -346,7 +346,7 @@ export function TechnicalDetails({ result }) {
         </span>
         <ChevronDown size={20} className="technical-chevron shrink-0 text-secondary transition-transform" aria-hidden="true" />
       </summary>
-      <div className="space-y-5 border-t border-slate-100 px-5 py-4 font-mono text-sm sm:px-6">
+      <div className="space-y-5 border-t border-[#374151] px-5 py-4 font-mono text-sm sm:px-6">
         <section>
           <h3 className="mb-3 font-sans font-semibold text-ink">Rule scores</h3>
           <ul className="space-y-3">
@@ -355,7 +355,7 @@ export function TechnicalDetails({ result }) {
                 <div className="mb-1 flex justify-between gap-3 text-secondary">
                   <span>{indicator.ruleName}</span><span>{indicator.weight}%</span>
                 </div>
-                <div className="h-2 overflow-hidden rounded-full bg-slate-100">
+                <div className="h-2 overflow-hidden rounded-full bg-[#0b0f19]">
                   <div className="h-full rounded-full" style={{ width: `${indicator.weight}%`, backgroundColor: getRisk(result).strong }} />
                 </div>
               </li>
@@ -367,7 +367,7 @@ export function TechnicalDetails({ result }) {
             href={result.mitre.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-indigo-200 bg-indigo-50 px-3 text-sm font-medium text-accent hover:bg-indigo-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+            className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-indigo-400/40 bg-indigo-500/15 px-3 text-sm font-medium text-indigo-300 hover:bg-indigo-500/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
           >
             {result.mitre.id}: {result.mitre.label}
             <ExternalLink size={14} aria-hidden="true" />
@@ -377,7 +377,7 @@ export function TechnicalDetails({ result }) {
           <h3 className="mb-2 font-sans font-semibold text-ink">Threat type</h3>
           <div className="flex flex-wrap gap-2">
             {[result.taxonomy.primary, result.taxonomy.secondary].filter(Boolean).map((tag) => (
-              <span key={tag} className="rounded-full bg-slate-100 px-3 py-1.5 text-xs text-secondary">{tag}</span>
+              <span key={tag} className="rounded-full bg-[#0b0f19] px-3 py-1.5 text-xs text-secondary">{tag}</span>
             ))}
           </div>
         </section>
@@ -386,7 +386,7 @@ export function TechnicalDetails({ result }) {
           <dl className="grid gap-x-4 gap-y-2 sm:grid-cols-2">
             {Object.entries(result.overview).map(([field, value]) => (
               <div key={field} className="min-w-0">
-                <dt className="capitalize text-slate-500">{field}</dt>
+                <dt className="capitalize text-[#9ca3af]">{field}</dt>
                 <dd className="break-words text-ink">{value}</dd>
               </div>
             ))}

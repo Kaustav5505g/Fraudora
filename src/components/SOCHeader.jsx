@@ -17,7 +17,7 @@ export function SOCHeader({ activeView, onViewChange }) {
 
   return (
     <>
-      <header className="h-16 shrink-0 border-b border-slate-200 bg-white">
+      <header className="h-16 shrink-0 border-b border-[#374151] bg-[#1f2937]">
         <div className="mx-auto flex h-full max-w-6xl items-center justify-between px-4 sm:px-6">
           <a href="/" className="flex min-h-11 items-center gap-3 rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" aria-label="Fraudora home">
             <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent text-white">
@@ -49,7 +49,7 @@ export function SOCHeader({ activeView, onViewChange }) {
             role="dialog"
             aria-modal="true"
             aria-labelledby="how-it-works-title"
-            className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl animate-fade-in"
+            className="w-full max-w-md rounded-2xl border border-[#374151] bg-[#1f2937] p-6 shadow-xl animate-fade-in"
           >
             <div className="mb-5 flex items-center justify-between gap-4">
               <h2 id="how-it-works-title" className="text-xl font-bold text-ink">How it works</h2>
@@ -57,7 +57,7 @@ export function SOCHeader({ activeView, onViewChange }) {
                 type="button"
                 onClick={() => setIsHowItWorksOpen(false)}
                 aria-label="Close"
-                className="flex h-11 w-11 items-center justify-center rounded-xl text-secondary hover:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+                className="flex h-11 w-11 items-center justify-center rounded-xl text-secondary hover:bg-[#374151] focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
               >
                 <X size={20} />
               </button>
@@ -69,7 +69,7 @@ export function SOCHeader({ activeView, onViewChange }) {
                 ['You decide', 'Review the explanation and choose what to do next.'],
               ].map(([title, description], index) => (
                 <li key={title} className="flex gap-3">
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-sm font-bold text-accent">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-500/15 text-sm font-bold text-indigo-300">
                     {index + 1}
                   </span>
                   <div>
