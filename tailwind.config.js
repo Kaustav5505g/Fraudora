@@ -4,19 +4,19 @@ export default {
   theme: {
     extend: {
       colors: {
-        accent: '#22D3EE',
-        obsidian: '#0F1115',
-        surface: '#1A1D24',
-        'border-soc': '#2F3441',
-        ink: '#F0F2F5',
-        muted: '#AEB5C2',
-        'muted-dim': '#7B8494',
-        safe: '#10B981',
-        warn: '#F59E0B',
-        crit: '#EF4444',
+        accent: '#4F46E5',
+        obsidian: '#F6F7FB',
+        surface: '#FFFFFF',
+        'border-soc': '#E2E8F0',
+        ink: '#0F172A',
+        muted: '#475569',
+        'muted-dim': '#64748B',
+        safe: '#059669',
+        warn: '#D97706',
+        crit: '#DC2626',
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
       },
       animation: {

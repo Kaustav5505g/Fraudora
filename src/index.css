@@ -2,163 +2,69 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ─── Base resets ─────────────────────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; }
+*, *::before, *::after {
+  box-sizing: border-box;
+}
 
 html {
-  color-scheme: dark;
+  color-scheme: light;
   scroll-behavior: smooth;
 }
 
 body {
-  background-color: #0F1115;
-  color: #F0F2F5;
-  font-family: 'Inter', system-ui, sans-serif;
   min-height: 100vh;
-
-  /*
-   * Grid texture at 6-7% opacity — visible at the top, fades with vignette.
-   * Layer order (bottom-to-top): vignette → grid.
-   */
-  background-image:
-    /* Radial vignette: opaque obsidian at edges, transparent at top-center */
-    radial-gradient(ellipse at top, transparent 0%, #0F1115 70%),
-    /* Horizontal grid lines */
-    linear-gradient(rgba(47, 52, 65, 0.06) 1px, transparent 1px),
-    /* Vertical grid lines */
-    linear-gradient(90deg, rgba(47, 52, 65, 0.06) 1px, transparent 1px);
-  background-size: auto, 40px 40px, 40px 40px;
-}
-
-body::before,
-body::after {
-  content: '';
-  position: fixed;
-  top: -180px;
-  z-index: -1;
-  width: 600px;
-  height: 600px;
-  border-radius: 9999px;
-  filter: blur(80px);
-  pointer-events: none;
-}
-
-body::before {
-  left: -160px;
-  background: rgb(34 211 238 / 10%);
-}
-
-body::after {
-  right: -160px;
-  width: 500px;
-  height: 500px;
-  background: rgb(239 68 68 / 10%);
+  background: #F6F7FB;
+  color: #0F172A;
+  font-family: 'Plus Jakarta Sans', Inter, system-ui, sans-serif;
 }
 
 #root {
-  position: relative;
-  z-index: 0;
+  min-height: 100vh;
 }
 
-@keyframes staggerFadeIn {
-  0% { opacity: 0; transform: translateY(8px); }
-  100% { opacity: 1; transform: translateY(0); }
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes triageGlow {
-  0%, 100% {
-    box-shadow: 0 0 0 1px rgb(var(--risk-color-rgb) / 18%), 0 0 20px -12px rgb(var(--risk-color-rgb) / 65%);
-  }
-  50% {
-    box-shadow: 0 0 0 1px rgb(var(--risk-color-rgb) / 42%), 0 0 34px -10px rgb(var(--risk-color-rgb) / 85%);
-  }
+.animate-fade-slide-in {
+  animation: fadeSlideIn 200ms ease-out both;
 }
 
-.animate-triage-glow {
-  animation: triageGlow 3s ease-in-out infinite;
+.risk-text {
+  color: var(--risk-strong);
 }
 
-.risk-banner {
-  background: linear-gradient(90deg, rgb(var(--risk-color-rgb) / 0.15), rgb(var(--risk-color-rgb) / 0.05), transparent);
+.risk-tint {
+  background-color: var(--risk-tint);
 }
 
-.border-risk {
-  border-color: var(--risk-color);
+.risk-border {
+  border-color: var(--risk-border);
 }
 
-.text-risk {
-  color: var(--risk-color);
+.risk-meter {
+  background-color: var(--risk-strong);
 }
 
-.bg-risk-soft {
-  background-color: rgb(var(--risk-color-rgb) / 0.15);
+.risk-mark {
+  background-color: var(--risk-tint);
+  color: var(--risk-strong);
 }
 
-.risk-guidance {
-  background: linear-gradient(135deg, rgb(var(--risk-color-rgb) / 0.15), rgb(var(--risk-color-rgb) / 0.05));
+details > summary::-webkit-details-marker {
+  display: none;
 }
 
-.risk-highlight {
-  color: color-mix(in srgb, var(--risk-color) 65%, white);
-  background-color: rgb(var(--risk-color-rgb) / 0.18);
-  border-color: rgb(var(--risk-color-rgb) / 0.65);
-  box-shadow: 0 0 12px -2px var(--risk-color);
+details[open] .technical-chevron {
+  transform: rotate(180deg);
 }
 
-.risk-glow {
-  box-shadow: 0 0 40px -12px var(--risk-color);
-}
-
-.risk-ring {
-  box-shadow: 0 0 18px -7px var(--risk-color);
-}
-
-.stagger-children > .stagger-fade-in:nth-child(1) { animation-delay: 0ms; }
-.stagger-children > .stagger-fade-in:nth-child(2) { animation-delay: 60ms; }
-.stagger-children > .stagger-fade-in:nth-child(3) { animation-delay: 120ms; }
-.stagger-children > .stagger-fade-in:nth-child(4) { animation-delay: 180ms; }
-.stagger-children > .stagger-fade-in:nth-child(5) { animation-delay: 240ms; }
-.stagger-children > .stagger-fade-in:nth-child(6) { animation-delay: 300ms; }
-
-/* Respect reduced-motion globally */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
   }
-}
-
-/* ─── Custom dark scrollbars (CSS Scrollbars spec — Baseline widely available) */
-* {
-  scrollbar-color: #2A2E39 transparent;
-  scrollbar-width: thin;
-}
-/* Webkit fallback for Safari */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #2A2E39; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #525866; }
-
-/* ─── Terminal textarea: blinking block caret on placeholder ────── */
-/*
- * We can't animate ::placeholder directly, so the blinking caret effect
- * is handled in React (BlinkingPrompt overlay component in PayloadInputBox).
- */
-
-/* mark reset — PayloadForensicView applies its own bg */
-mark { background: transparent; color: inherit; }
-
-/* ─── Sweep animation — used by PayloadInputBox while analyzing ─── */
-@keyframes sweep {
-  0%   { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
-.sweep-animate {
-  animation: sweep 1.2s linear infinite;
-}
-
-/* ─── Status bar / engine strip fixed positioning helpers ────────── */
-.has-status-bar {
-  padding-bottom: 28px;
 }

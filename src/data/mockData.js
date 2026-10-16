@@ -8,32 +8,41 @@ export const RISK_LEVELS = {
   safe: {
     label: 'SAFE',
     shortLabel: 'LOW',
-    color: '#10B981',
+    tint: '#ECFDF5',
+    border: '#A7F3D0',
+    strong: '#059669',
+    color: '#059669',
     colorClass: 'text-safe',
-    bgClass: 'bg-safe/10',
-    borderClass: 'border-safe/40',
+    bgClass: 'bg-[#ECFDF5]',
+    borderClass: 'border-[#A7F3D0]',
     dotClass: 'bg-safe',
-    badgeClass: 'bg-safe/15 text-safe border border-safe/30',
+    badgeClass: 'bg-[#ECFDF5] text-safe border border-[#A7F3D0]',
   },
   suspicious: {
     label: 'SUSPICIOUS',
     shortLabel: 'MED',
-    color: '#F59E0B',
+    tint: '#FFFBEB',
+    border: '#FDE68A',
+    strong: '#D97706',
+    color: '#D97706',
     colorClass: 'text-warn',
-    bgClass: 'bg-warn/10',
-    borderClass: 'border-warn/40',
+    bgClass: 'bg-[#FFFBEB]',
+    borderClass: 'border-[#FDE68A]',
     dotClass: 'bg-warn',
-    badgeClass: 'bg-warn/15 text-warn border border-warn/30',
+    badgeClass: 'bg-[#FFFBEB] text-warn border border-[#FDE68A]',
   },
   critical: {
     label: 'HIGH RISK',
     shortLabel: 'HIGH',
-    color: '#EF4444',
+    tint: '#FEF2F2',
+    border: '#FECACA',
+    strong: '#DC2626',
+    color: '#DC2626',
     colorClass: 'text-crit',
-    bgClass: 'bg-crit/10',
-    borderClass: 'border-crit/40',
+    bgClass: 'bg-[#FEF2F2]',
+    borderClass: 'border-[#FECACA]',
     dotClass: 'bg-crit',
-    badgeClass: 'bg-crit/15 text-crit border border-crit/30',
+    badgeClass: 'bg-[#FEF2F2] text-crit border border-[#FECACA]',
   },
 };
 
@@ -41,21 +50,21 @@ export const ATTACK_ANATOMY = [
   {
     step: '01',
     title: 'IMPERSONATE',
-    description: 'Pretends to be SBI',
+    description: 'Poses as SBI',
     icon: 'Landmark',
     severity: 'critical',
   },
   {
     step: '02',
     title: 'PANIC',
-    description: 'Threatens SBI KYC account block',
+    description: 'Claims your account will be blocked',
     icon: 'AlertTriangle',
     severity: 'critical',
   },
   {
     step: '03',
     title: 'URGENCY',
-    description: 'Pressures immediate verification',
+    description: 'Pushes for immediate verification',
     icon: 'Timer',
     severity: 'suspicious',
   },
@@ -80,7 +89,7 @@ export const SAMPLES = [
   {
     id: 'upi_refund',
     label: 'UPI Refund Link',
-    icon: 'Package',
+    icon: 'IndianRupee',
     risk: 'critical',
     payload:
       'UPI REFUND: Your payment refund of Rs 4,999 is pending. Claim it now by verifying your UPI PIN: https://upi-refund.claim-secure.in/receive',
@@ -88,7 +97,7 @@ export const SAMPLES = [
   {
     id: 'electricity',
     label: 'Electricity Disconnection',
-    icon: 'GraduationCap',
+    icon: 'Zap',
     risk: 'critical',
     payload:
       'URGENT: Your electricity connection will be disconnected tonight due to an unpaid bill. Pay immediately to avoid disconnection: https://electricity-bill.pay-now-india.in',
@@ -104,14 +113,14 @@ export const SAMPLES = [
   {
     id: 'fake_job',
     label: 'Fake Job Offer',
-    icon: 'Users',
+    icon: 'Briefcase',
     risk: 'suspicious',
     payload:
       'Congratulations! You are selected for a work-from-home job with salary Rs 45,000/month. Pay a refundable Rs 999 registration fee now to confirm your position.',
   },
   {
     id: 'genuine_otp',
-    label: 'Genuine SBI OTP',
+    label: 'Real OTP',
     icon: 'ShieldCheck',
     risk: 'safe',
     payload:
@@ -145,9 +154,19 @@ function createResult({
   countermeasures,
   primary,
   secondary,
+  steps,
+  anatomy = [],
+  expectedDomain,
+  mitre,
 }) {
   const payload = SAMPLE_BY_ID[sampleId].payload;
-  return {
+  const links = [...payload.matchAll(/https?:\/\/[^\s]+/g)].map(([url]) => ({
+    url,
+    actualDomain: normalizedDomain,
+    expectedDomain: expectedDomain || 'Official service website',
+    registeredDays: Number.parseInt(domainAge, 10) || null,
+  }));
+  const result = {
     messageId: `msg_${sampleId.toUpperCase()}_DEMO`,
     score,
     riskLevel,
@@ -178,13 +197,18 @@ function createResult({
       domainAge,
       registrar,
     },
+    links,
+    anatomy,
     guidance: {
       directive,
       explanation,
       countermeasures,
+      steps: steps || countermeasures,
     },
     highlightTerms,
   };
+  if (mitre) result.mitre = mitre;
+  return result;
 }
 
 const SBI_RESULT = createResult({
@@ -204,13 +228,26 @@ const SBI_RESULT = createResult({
   reputation: 'Typosquatting / Brand impersonation',
   domainAge: '4 days old',
   registrar: 'Mock domain record',
-  directive: 'DO NOT CLICK LINK. Call 1930.',
+  directive: 'Do not click the link. Call 1930.',
   explanation: 'This message impersonates SBI and threatens an account block to rush you into a fake KYC page. Do not share account details or OTPs. Report the incident at cybercrime.gov.in or call 1930.',
   countermeasures: [
     'Do not tap the link or share an OTP, PIN, or password.',
     'Contact SBI using the number on your card or its official app.',
     'Report the message at cybercrime.gov.in or call 1930.',
   ],
+  steps: [
+    'Do not open the link or share your OTP, PIN, or password.',
+    'Contact SBI through its official app or the number on your card.',
+    'Report the message at cybercrime.gov.in or call 1930.',
+  ],
+  anatomy: [
+    { step: '01', title: 'Poses as SBI', description: 'Uses a bank sender name to appear trustworthy.', icon: 'Landmark' },
+    { step: '02', title: 'Creates fear', description: 'Threatens to block your account over KYC.', icon: 'AlertTriangle' },
+    { step: '03', title: 'Adds pressure', description: 'Demands that you verify immediately.', icon: 'Timer' },
+    { step: '04', title: 'Steals details', description: 'A lookalike page asks for banking information.', icon: 'Link2' },
+  ],
+  expectedDomain: 'sbi.co.in',
+  mitre: { id: 'T1566.002', label: 'Phishing: Spearphishing Link', url: 'https://attack.mitre.org/techniques/T1566/002/' },
   primary: 'Social Engineering',
   secondary: 'Potential Phishing',
 });
