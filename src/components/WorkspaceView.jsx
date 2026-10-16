@@ -1,28 +1,32 @@
 import React from 'react';
-import { HeroHeader } from './HeroHeader';
+import { ShieldCheck } from 'lucide-react';
 import { PillSearch } from './PillSearch';
-import { QuickTestChips } from './QuickTestChips';
 
 export function WorkspaceView({
   payload,
   onPayloadChange,
-  error,
-  isAnalyzing,
-  activeSampleId,
-  onSampleSelect,
   onScan,
-  onShowForensic,
+  isAnalyzing,
+  error,
 }) {
-  void onShowForensic;
-
   return (
     <main
-      role="main"
       aria-label="Message checker"
-      className="mx-auto w-full max-w-2xl flex-1 px-4 pb-8 pt-6 sm:px-6 sm:pt-8 motion-safe:animate-fade-in motion-reduce:animate-none"
+      className="relative flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center px-4 pb-24"
     >
-      <div className="space-y-5">
-        <HeroHeader />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute left-1/2 top-[40%] h-72 w-[min(36rem,100vw)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-500/10 blur-3xl"
+      />
+
+      <div className="relative mb-8 flex items-center gap-3">
+        <div className="grid h-12 w-12 place-items-center rounded-xl bg-indigo-500 shadow-[0_0_24px_rgba(99,102,241,0.35)]">
+          <ShieldCheck className="h-7 w-7 text-white" aria-hidden="true" />
+        </div>
+        <h1 className="text-5xl font-bold tracking-tight text-[#f9fafb]">Fraudora</h1>
+      </div>
+
+      <div className="relative w-full">
         <PillSearch
           value={payload}
           onChange={onPayloadChange}
@@ -30,7 +34,6 @@ export function WorkspaceView({
           isAnalyzing={isAnalyzing}
           error={error}
         />
-        <QuickTestChips activeSampleId={activeSampleId} onSelect={onSampleSelect} />
       </div>
     </main>
   );
