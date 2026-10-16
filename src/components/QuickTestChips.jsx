@@ -22,10 +22,10 @@ const SAMPLE_NAMES = {
 export function QuickTestChips({ activeSampleId, onSelect }) {
   return (
     <section aria-labelledby="sample-heading" className="space-y-2">
-      <h2 id="sample-heading" className="text-sm font-medium text-secondary">
+      <h2 id="sample-heading" className="text-center text-sm font-medium text-secondary">
         Or try an example
       </h2>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap justify-center gap-2">
         {SAMPLES.map(({ id, label, icon, payload }) => {
           const Icon = ICON_MAP[icon] ?? ShieldCheck;
           const selected = activeSampleId === id;
@@ -36,10 +36,10 @@ export function QuickTestChips({ activeSampleId, onSelect }) {
               onClick={() => onSelect(payload, id)}
               aria-label={`Try example: ${label}`}
               aria-pressed={selected}
-              className={`flex min-h-11 items-center gap-2 rounded-full border px-3 py-2 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
+              className={`flex min-h-11 items-center gap-2 rounded-full border border-[#374151] px-3 py-1.5 text-sm text-[#9ca3af] transition hover:border-[#4b5563] hover:text-[#f9fafb] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
                 selected
-                  ? 'border-indigo-200 bg-indigo-50 text-accent'
-                  : 'border-slate-300 bg-white text-secondary hover:border-indigo-300 hover:bg-indigo-50/60'
+                  ? 'border-indigo-400 bg-indigo-500/10 text-[#f9fafb]'
+                  : ''
               }`}
             >
               <Icon size={16} aria-hidden="true" />
