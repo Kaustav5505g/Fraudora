@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Base resets ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  color-scheme: dark;
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #0F1115;
+  color: #F0F2F5;
+  font-family: 'Inter', system-ui, sans-serif;
+  min-height: 100vh;
+  /* Faint grid texture at ~3% opacity — must not hurt legibility */
+  background-image:
+    linear-gradient(rgba(42, 46, 57, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(42, 46, 57, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Respect reduced-motion for texture */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}
+
+/* ─── Custom dark scrollbars (scrollbar-color / scrollbar-width — Baseline) */
+* {
+  scrollbar-color: #2A2E39 #0F1115;
+  scrollbar-width: thin;
+}
+
+/* Webkit fallback for older Safari */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #0F1115; }
+::-webkit-scrollbar-thumb { background: #2A2E39; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #525866; }
+
+/* ─── Utility for mark highlights inside payload forensics ─────── */
+mark {
+  background: transparent; /* Reset browser default; components apply their own */
+  color: inherit;
+}
