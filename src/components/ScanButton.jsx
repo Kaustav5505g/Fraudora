@@ -12,8 +12,8 @@ export function ScanButton({ isAnalyzing, isDisabled, onScan }) {
 
   useEffect(() => {
     if (!isAnalyzing) {
-      setCompletedSteps(0);
-      return undefined;
+      const frameId = window.requestAnimationFrame(() => setCompletedSteps(0));
+      return () => window.cancelAnimationFrame(frameId);
     }
     const intervalId = window.setInterval(() => {
       setCompletedSteps((count) => Math.min(count + 1, CHECK_STEPS.length));

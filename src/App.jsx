@@ -64,11 +64,11 @@ export default function App() {
 
     // Validation
     if (!trimmed) {
-      setError('Payload is empty. Paste a message to analyze.');
+      setError('Please paste a message to check.');
       return;
     }
     if (trimmed.length < MIN_LEN) {
-      setError('Payload too short to analyze.');
+      setError('Please paste a longer message to check.');
       return;
     }
 
