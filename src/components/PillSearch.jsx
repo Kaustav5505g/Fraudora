@@ -20,7 +20,7 @@ export function PillSearch({ value, onChange, onSubmit, isAnalyzing, error }) {
 
   return (
     <div className="mx-auto w-full max-w-2xl">
-      <div className="flex items-center gap-3 rounded-[2rem] border border-[#374151] bg-[#1f2937] px-4 py-3 shadow-[0_4px_20px_-6px_rgba(0,0,0,0.5)] transition-all duration-200 hover:border-[#4b5563] focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500/40 sm:px-5">
+      <div className="flex items-center gap-3 rounded-full bg-[#111827] border border-[#374151] px-6 py-4 text-lg shadow-[0_8px_40px_-12px_rgba(99,102,241,0.35)] transition-all duration-200 hover:border-[#4b5563] focus-within:border-indigo-500 focus-within:shadow-[0_8px_40px_-8px_rgba(99,102,241,0.5)]">
         <Search className="h-5 w-5 shrink-0 text-[#9ca3af]" aria-hidden="true" />
         <textarea
           ref={textareaRef}
@@ -34,7 +34,7 @@ export function PillSearch({ value, onChange, onSubmit, isAnalyzing, error }) {
           aria-label="Message to scan"
           aria-invalid={Boolean(error)}
           aria-describedby={error ? 'pill-search-error' : undefined}
-          className="max-h-40 min-h-10 min-w-0 flex-1 resize-none overflow-y-auto bg-transparent py-2 text-base leading-6 text-[#f9fafb] placeholder:text-[#9ca3af] outline-none"
+          className="max-h-40 min-h-10 min-w-0 flex-1 resize-none overflow-y-auto bg-transparent py-2 text-lg leading-6 text-[#f9fafb] placeholder:text-[#9ca3af] outline-none"
         />
         {value && (
           <button

@@ -24,7 +24,7 @@ export function SOCHeader({ activeView, onViewChange }) {
               <ShieldCheck size={23} aria-hidden="true" />
             </span>
             <span className="flex items-baseline gap-2">
-              <span className="text-xl font-bold text-ink">Fraudora</span>
+              <span className="text-xl font-bold text-[#f9fafb]">Fraudora</span>
               <span className="hidden text-sm text-muted sm:inline">Scam checker</span>
             </span>
           </a>
