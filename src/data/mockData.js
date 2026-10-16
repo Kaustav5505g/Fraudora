@@ -1,28 +1,14 @@
 /**
- * mockData.js — Fraudora static mock data.
- *
- * Expected SCAN_RESULT shape (mirrors future API response):
- * {
- *   messageId: string,
- *   score: number (0–100),
- *   riskLevel: 'safe' | 'suspicious' | 'critical',
- *   overview: { encoding, segments, language, carrier, direction, source },
- *   indicators: Array<{ id, severity, ruleName, explanation, weight }>,
- *   taxonomy: { primary, secondary, mitre: { id, label, url } },
- *   linkAnalysis: { normalizedDomain, reputation, domainAge, registrar },
- *   guidance: { directive, explanation, countermeasures: string[] },
- *   highlightTerms: string[],
- * }
- *
- * SAMPLES shape: { id, label, icon, payload, risk: 'critical'|'suspicious'|'safe' }
- * RECENT_SCANS shape: { id, time, sender, score, riskLevel }
+ * Fraudora demonstration data. Results and telemetry in this module are static.
  */
 
-/** Traffic-light risk level map — single source of truth for colors/icons/labels */
+export const SHOW_DEMO_STATS = false;
+
 export const RISK_LEVELS = {
   safe: {
     label: 'SAFE',
     shortLabel: 'LOW',
+    color: '#10B981',
     colorClass: 'text-safe',
     bgClass: 'bg-safe/10',
     borderClass: 'border-safe/40',
@@ -32,6 +18,7 @@ export const RISK_LEVELS = {
   suspicious: {
     label: 'SUSPICIOUS',
     shortLabel: 'MED',
+    color: '#F59E0B',
     colorClass: 'text-warn',
     bgClass: 'bg-warn/10',
     borderClass: 'border-warn/40',
@@ -41,6 +28,7 @@ export const RISK_LEVELS = {
   critical: {
     label: 'HIGH RISK',
     shortLabel: 'HIGH',
+    color: '#EF4444',
     colorClass: 'text-crit',
     bgClass: 'bg-crit/10',
     borderClass: 'border-crit/40',
@@ -53,191 +41,297 @@ export const ATTACK_ANATOMY = [
   {
     step: '01',
     title: 'IMPERSONATE',
-    description: 'Pretends to be NatWest',
+    description: 'Pretends to be SBI',
     icon: 'Landmark',
     severity: 'critical',
   },
   {
     step: '02',
     title: 'PANIC',
-    description: 'Claims account is suspended',
+    description: 'Threatens SBI KYC account block',
     icon: 'AlertTriangle',
     severity: 'critical',
   },
   {
     step: '03',
     title: 'URGENCY',
-    description: 'Demands action immediately',
+    description: 'Pressures immediate verification',
     icon: 'Timer',
     severity: 'suspicious',
   },
   {
     step: '04',
     title: 'TRAP',
-    description: 'Fake link harvests login',
+    description: 'Fake link captures banking details',
     icon: 'Link2',
     severity: 'critical',
   },
 ];
 
-/** Quick-test sample payloads — 5 entries covering the full traffic-light range */
 export const SAMPLES = [
   {
-    id: 'natwest',
-    label: 'NatWest Bank Scam',
+    id: 'sbi_kyc',
+    label: 'SBI KYC Block',
     icon: 'Landmark',
     risk: 'critical',
     payload:
-      'NatWest Alert: Your account has been suspended due to unusual activity. Verify your identity immediately to restore access: https://natwest-verify.secure-l0gin.co.uk/login',
+      'VK-SBIINB: Your SBI account will be blocked today due to incomplete KYC. Verify immediately to keep your account active: https://sbi-kyc-update.secure-l0gin.in/verify',
   },
   {
-    id: 'parcel',
-    label: 'Parcel Delivery Fee',
+    id: 'upi_refund',
+    label: 'UPI Refund Link',
     icon: 'Package',
     risk: 'critical',
     payload:
-      'Royal Mail: We attempted delivery of your parcel but require a £2.99 redelivery fee. Pay now to avoid return: http://royalmail-redelivery.uk-parcel-fee.com/pay',
+      'UPI REFUND: Your payment refund of Rs 4,999 is pending. Claim it now by verifying your UPI PIN: https://upi-refund.claim-secure.in/receive',
   },
   {
-    id: 'student-loan',
-    label: 'Student Loan Refund',
+    id: 'electricity',
+    label: 'Electricity Disconnection',
     icon: 'GraduationCap',
+    risk: 'critical',
+    payload:
+      'URGENT: Your electricity connection will be disconnected tonight due to an unpaid bill. Pay immediately to avoid disconnection: https://electricity-bill.pay-now-india.in',
+  },
+  {
+    id: 'courier_fee',
+    label: 'Courier Customs Fee',
+    icon: 'Package',
     risk: 'suspicious',
     payload:
-      'Student Finance England: You are owed a £347.50 refund. Claim within 24 hours or funds will be forfeited: https://studentfinance-refund.gov-secure.info/claim',
+      'DELIVERY ALERT: Your parcel is held at customs. Pay Rs 45 clearance fee today to avoid return: https://parcel-customs-fee.track-delivery.in/pay',
   },
   {
-    id: 'hi-mum',
-    label: 'Family "Hi Mum" Impersonation',
+    id: 'fake_job',
+    label: 'Fake Job Offer',
     icon: 'Users',
     risk: 'suspicious',
     payload:
-      "Hi Mum, it's me. I've lost my phone and I'm using a friend's number. I'm in a bit of trouble and need you to send £500 urgently. I'll explain later. Please don't call this number.",
+      'Congratulations! You are selected for a work-from-home job with salary Rs 45,000/month. Pay a refundable Rs 999 registration fee now to confirm your position.',
   },
   {
-    id: 'genuine-otp',
-    label: 'Genuine Bank OTP',
+    id: 'genuine_otp',
+    label: 'Genuine SBI OTP',
     icon: 'ShieldCheck',
     risk: 'safe',
     payload:
-      'Your NatWest security code is 847291. Do not share this code with anyone. NatWest will never call you to ask for this code. Valid for 10 minutes.',
+      'VK-SBIINB: Your SBI OTP is 847291. Do not share this OTP with anyone, including bank staff. Valid for 10 minutes.',
   },
 ];
 
-/** Mock recent scan history rows (used by RecentScans panel) */
 export const RECENT_SCANS = [
-  {
-    id: 'rs-001',
-    time: '01:44:12',
-    sender: '+44 7700 900123',
-    score: 88,
-    riskLevel: 'critical',
-  },
-  {
-    id: 'rs-002',
-    time: '01:31:07',
-    sender: '+44 7911 123456',
-    score: 54,
-    riskLevel: 'suspicious',
-  },
-  {
-    id: 'rs-003',
-    time: '01:18:55',
-    sender: 'ROYAL-MAIL',
-    score: 79,
-    riskLevel: 'critical',
-  },
-  {
-    id: 'rs-004',
-    time: '01:02:33',
-    sender: 'NATWEST',
-    score: 7,
-    riskLevel: 'safe',
-  },
+  { id: 'rs-001', time: '01:44:12', sender: 'VK-SBIINB', score: 88, riskLevel: 'critical' },
+  { id: 'rs-002', time: '01:31:07', sender: '+91 98765 43210', score: 54, riskLevel: 'suspicious' },
+  { id: 'rs-003', time: '01:18:55', sender: 'UPI-REFUND', score: 79, riskLevel: 'critical' },
+  { id: 'rs-004', time: '01:02:33', sender: 'AD-AIRTEL', score: 7, riskLevel: 'safe' },
 ];
 
-/** Full forensic scan result (mirrors API shape) — used when no real scan is available */
-export const SCAN_RESULT = {
-  messageId: 'msg_01HV2Z6JQX9K7F3R2M8C',
+const SAMPLE_BY_ID = Object.fromEntries(SAMPLES.map((sample) => [sample.id, sample]));
+
+function createResult({
+  sampleId,
+  score,
+  riskLevel,
+  carrier,
+  source,
+  indicators,
+  highlightTerms,
+  normalizedDomain,
+  reputation,
+  domainAge,
+  registrar,
+  directive,
+  explanation,
+  countermeasures,
+  primary,
+  secondary,
+}) {
+  const payload = SAMPLE_BY_ID[sampleId].payload;
+  return {
+    messageId: `msg_${sampleId.toUpperCase()}_DEMO`,
+    score,
+    riskLevel,
+    payload,
+    overview: {
+      encoding: 'UTF-8',
+      segments: '1 / 1',
+      language: 'en-IN',
+      carrier,
+      direction: 'Inbound',
+      source,
+    },
+    indicators,
+    taxonomy: {
+      primary,
+      secondary,
+      mitre: {
+        id: riskLevel === 'safe' ? 'T1036' : 'T1566.002',
+        label: riskLevel === 'safe' ? 'Masquerading' : 'Phishing: Spearphishing Link',
+        url: riskLevel === 'safe'
+          ? 'https://attack.mitre.org/techniques/T1036/'
+          : 'https://attack.mitre.org/techniques/T1566/002/',
+      },
+    },
+    linkAnalysis: {
+      normalizedDomain,
+      reputation,
+      domainAge,
+      registrar,
+    },
+    guidance: {
+      directive,
+      explanation,
+      countermeasures,
+    },
+    highlightTerms,
+  };
+}
+
+const SBI_RESULT = createResult({
+  sampleId: 'sbi_kyc',
   score: 88,
   riskLevel: 'critical',
-  payload:
-    'NatWest Alert: Your account has been suspended due to unusual activity. Verify your identity immediately to restore access: https://natwest-verify.secure-l0gin.co.uk/login',
-
-  overview: {
-    encoding: 'UTF-8',
-    segments: '1 / 1',
-    language: 'en-GB',
-    carrier: 'O2 UK',
-    direction: 'Inbound',
-    source: '+44 7700 900123',
-  },
-
+  carrier: 'Jio',
+  source: 'VK-SBIINB',
   indicators: [
-    {
-      id: 'domain-age',
-      severity: 'critical',
-      ruleName: 'Domain age ≤ 7 days',
-      explanation:
-        'Newly registered domains are a hallmark of throwaway phishing infrastructure designed to evade blocklists.',
-      weight: 25,
-    },
-    {
-      id: 'tld-spoof',
-      severity: 'critical',
-      ruleName: 'Uncommon TLD / brand spoof',
-      explanation:
-        'The link imitates a trusted bank using a lookalike subdomain structure — a classic typosquatting pattern.',
-      weight: 22,
-    },
-    {
-      id: 'no-reputation',
-      severity: 'critical',
-      ruleName: 'No historical reputation',
-      explanation:
-        'Domain has no prior trust signals, DMARC record, or reputation history in any major threat-intel feed.',
-      weight: 20,
-    },
-    {
-      id: 'urgency-tone',
-      severity: 'suspicious',
-      ruleName: 'Manufactured urgency tone',
-      explanation:
-        'Language engineered to trigger panic ("suspended", "immediately") and bypass careful thinking — a core social-engineering technique.',
-      weight: 21,
-    },
+    { id: 'domain-age', severity: 'critical', ruleName: 'Newly registered domain', explanation: 'A new domain can be disposable phishing infrastructure.', weight: 25 },
+    { id: 'brand-spoof', severity: 'critical', ruleName: 'Bank brand impersonation', explanation: 'The sender claims to represent SBI but the link is not an official SBI domain.', weight: 22 },
+    { id: 'credential-request', severity: 'critical', ruleName: 'Credential-harvesting link', explanation: 'The message directs the recipient to a lookalike sign-in page.', weight: 20 },
+    { id: 'urgency', severity: 'suspicious', ruleName: 'Manufactured urgency', explanation: 'Threats of account blocking pressure the recipient to act without checking.', weight: 21 },
   ],
+  highlightTerms: ['blocked', 'KYC', 'immediately'],
+  normalizedDomain: 'sbi-kyc-update.secure-l0gin.in',
+  reputation: 'Typosquatting / Brand impersonation',
+  domainAge: '4 days old',
+  registrar: 'Mock domain record',
+  directive: 'DO NOT CLICK LINK. Call 1930.',
+  explanation: 'This message impersonates SBI and threatens an account block to rush you into a fake KYC page. Do not share account details or OTPs. Report the incident at cybercrime.gov.in or call 1930.',
+  countermeasures: [
+    'Do not tap the link or share an OTP, PIN, or password.',
+    'Contact SBI using the number on your card or its official app.',
+    'Report the message at cybercrime.gov.in or call 1930.',
+  ],
+  primary: 'Social Engineering',
+  secondary: 'Potential Phishing',
+});
 
-  taxonomy: {
-    primary: 'Social Engineering',
-    secondary: 'Potential Phishing',
-    mitre: {
-      id: 'T1566.002',
-      label: 'Phishing: Spearphishing Link',
-      url: 'https://attack.mitre.org/techniques/T1566/002/',
-    },
-  },
-
-  linkAnalysis: {
-    // l0gin uses a zero instead of 'o' — highlight in UI
-    normalizedDomain: 'natwest-verify.secure-l0gin.co.uk',
-    reputation: 'Typosquatting / Homoglyph',
-    domainAge: '4 days old',
-    // Mock registrar — not real data
-    registrar: 'NameSilo, LLC',
-  },
-
-  guidance: {
-    directive: 'DO NOT CLICK LINK. Call 1930.',
-    explanation:
-      "This message impersonates NatWest Bank, manufactures panic about a \"suspended\" account, and pushes you to act \"immediately\" on a link registered just 4 days ago. The domain is not NatWest's real domain. Calling 1930 (the National Cyber Helpline for India) or your bank's official number on the back of your card is the safest response.",
-    countermeasures: [
-      "Don't tap the link or reply to this message.",
-      'Report and delete the SMS immediately.',
-      'If you already entered details, contact your bank using the number on your card right away.',
-      'Warn family and friends — this scam circulates widely.',
+export const MOCK_RESULTS = {
+  sbi_kyc: SBI_RESULT,
+  upi_refund: createResult({
+    sampleId: 'upi_refund',
+    score: 84,
+    riskLevel: 'critical',
+    carrier: 'Airtel',
+    source: 'UPI-REFUND',
+    indicators: [
+      { id: 'upi-pin', severity: 'critical', ruleName: 'UPI PIN solicitation', explanation: 'A refund never requires sharing a UPI PIN.', weight: 30 },
+      { id: 'fake-refund', severity: 'critical', ruleName: 'Unsolicited refund claim', explanation: 'The unexpected refund offer is used to lure recipients into a payment flow.', weight: 25 },
+      { id: 'lookalike-link', severity: 'critical', ruleName: 'Unverified payment domain', explanation: 'The claim link is not an official bank or payment-service domain.', weight: 29 },
     ],
-  },
-
-  highlightTerms: ['suspended', 'immediately', 'unusual activity'],
+    highlightTerms: ['refund', 'UPI PIN', 'Claim it now'],
+    normalizedDomain: 'upi-refund.claim-secure.in',
+    reputation: 'Unverified payment domain',
+    domainAge: '12 days old',
+    registrar: 'Mock domain record',
+    directive: 'DO NOT CLICK LINK. Call 1930.',
+    explanation: 'This message offers an unsolicited UPI refund and asks for a PIN. Never enter a UPI PIN to receive money. Report suspicious financial messages at cybercrime.gov.in or call 1930.',
+    countermeasures: ['Do not open the link or share your UPI PIN.', 'Check transactions in your official UPI app.', 'Report the message at cybercrime.gov.in or call 1930.'],
+    primary: 'Payment Fraud',
+    secondary: 'UPI Refund Scam',
+  }),
+  electricity: createResult({
+    sampleId: 'electricity',
+    score: 79,
+    riskLevel: 'critical',
+    carrier: 'Vi',
+    source: 'AD-POWERBILL',
+    indicators: [
+      { id: 'disconnection-threat', severity: 'critical', ruleName: 'Disconnection threat', explanation: 'A same-day cutoff threat creates pressure to pay quickly.', weight: 27 },
+      { id: 'urgent-payment', severity: 'critical', ruleName: 'Urgent payment demand', explanation: 'The recipient is pushed to pay through an unverified page.', weight: 26 },
+      { id: 'unknown-domain', severity: 'critical', ruleName: 'Unverified utility domain', explanation: 'The destination is not verified as the utility provider’s official site.', weight: 26 },
+    ],
+    highlightTerms: ['disconnected tonight', 'Pay immediately', 'disconnection'],
+    normalizedDomain: 'electricity-bill.pay-now-india.in',
+    reputation: 'Unverified utility payment domain',
+    domainAge: '9 days old',
+    registrar: 'Mock domain record',
+    directive: 'DO NOT CLICK LINK. Call 1930.',
+    explanation: 'The message uses a threatened electricity cutoff to rush payment to an unverified website. Confirm bills only through your electricity provider’s official channels. Report suspected fraud at cybercrime.gov.in or call 1930.',
+    countermeasures: ['Do not pay through the message link.', 'Verify the bill with your electricity provider.', 'Report the message at cybercrime.gov.in or call 1930.'],
+    primary: 'Social Engineering',
+    secondary: 'Utility Payment Scam',
+  }),
+  courier_fee: createResult({
+    sampleId: 'courier_fee',
+    score: 63,
+    riskLevel: 'suspicious',
+    carrier: 'Airtel',
+    source: '+91 91234 56780',
+    indicators: [
+      { id: 'unexpected-fee', severity: 'suspicious', ruleName: 'Unexpected customs fee', explanation: 'A small fee can be used to collect card or UPI details.', weight: 28 },
+      { id: 'delivery-pressure', severity: 'suspicious', ruleName: 'Delivery urgency', explanation: 'The deadline encourages a quick payment without verifying shipment status.', weight: 22 },
+    ],
+    highlightTerms: ['held at customs', 'Pay Rs 45', 'today'],
+    normalizedDomain: 'parcel-customs-fee.track-delivery.in',
+    reputation: 'Unverified courier domain',
+    domainAge: '18 days old',
+    registrar: 'Mock domain record',
+    directive: 'VERIFY THE COURIER FIRST.',
+    explanation: 'Unexpected customs or delivery fees can be used to steal payment details. Check the shipment using the courier’s official website or app before paying.',
+    countermeasures: ['Do not pay through the message link.', 'Check the tracking number through the courier’s official channel.', 'Report suspected fraud at cybercrime.gov.in or call 1930.'],
+    primary: 'Social Engineering',
+    secondary: 'Courier Fee Scam',
+  }),
+  fake_job: createResult({
+    sampleId: 'fake_job',
+    score: 58,
+    riskLevel: 'suspicious',
+    carrier: 'Jio',
+    source: '+91 99876 54321',
+    indicators: [
+      { id: 'upfront-fee', severity: 'suspicious', ruleName: 'Upfront job fee', explanation: 'Legitimate employers do not require a refundable fee to secure a job.', weight: 31 },
+      { id: 'unverified-offer', severity: 'suspicious', ruleName: 'Unverified employment offer', explanation: 'A high salary and instant selection are offered without a verifiable hiring process.', weight: 27 },
+    ],
+    highlightTerms: ['selected', 'Rs 45,000', 'registration fee'],
+    normalizedDomain: 'No link detected',
+    reputation: 'No embedded link',
+    domainAge: 'Not applicable',
+    registrar: 'Not applicable',
+    directive: 'DO NOT PAY AN UPFRONT FEE.',
+    explanation: 'The message promises a job and asks for a registration fee. Verify openings directly with the employer and never pay to secure an offer.',
+    countermeasures: ['Do not send money or identity documents.', 'Verify the employer through its official careers page.', 'Report suspected fraud at cybercrime.gov.in or call 1930.'],
+    primary: 'Employment Fraud',
+    secondary: 'Job Fee Scam',
+  }),
+  genuine_otp: createResult({
+    sampleId: 'genuine_otp',
+    score: 4,
+    riskLevel: 'safe',
+    carrier: 'Jio',
+    source: 'VK-SBIINB',
+    indicators: [],
+    highlightTerms: [],
+    normalizedDomain: 'No link detected',
+    reputation: 'No embedded link',
+    domainAge: 'Not applicable',
+    registrar: 'Not applicable',
+    directive: 'Looks legitimate. Never share this OTP with anyone.',
+    explanation: 'This sample is an informational one-time password message and explicitly warns against sharing the code. Verify unexpected activity through the official SBI app or number.',
+    countermeasures: ['Never share an OTP with anyone.', 'Use the code only for an action you initiated.', 'Contact SBI through official channels if you did not request it.'],
+    primary: 'Bank Notification',
+    secondary: 'One-Time Password',
+  }),
 };
+
+/** Default forensic result shown before a sample scan. */
+export const SCAN_RESULT = MOCK_RESULTS.sbi_kyc;
+
+/**
+ * MOCK, replace with API call.
+ * Match an exact built-in sample payload; unknown messages use the SBI demo result.
+ */
+export async function analyzeMessage(payload) {
+  const sample = SAMPLES.find((item) => item.payload === payload);
+  const result = sample ? MOCK_RESULTS[sample.id] : MOCK_RESULTS.sbi_kyc;
+  return new Promise((resolve) => setTimeout(() => resolve(result), 1800));
+}

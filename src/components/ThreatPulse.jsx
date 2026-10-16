@@ -1,6 +1,7 @@
 import React from 'react';
 import { Activity, BarChart3 } from 'lucide-react';
 import { Card } from './ui/Card';
+import { SHOW_DEMO_STATS } from '../data/mockData';
 
 const VOLUME_POINTS = [
   35, 31, 40, 30, 34, 22, 29, 19, 25, 17, 22, 12,
@@ -29,9 +30,12 @@ export function ThreatPulse() {
         <span className="flex h-7 w-7 items-center justify-center rounded-md bg-accent/15 text-accent">
           <Activity size={15} aria-hidden="true" />
         </span>
-        <h2 className="text-xs font-mono uppercase tracking-widest text-ink/80">
-          THREAT PULSE
-        </h2>
+        <div className="flex flex-1 items-center justify-between gap-2">
+          <h2 className="text-xs font-mono uppercase tracking-widest text-ink/80">
+            THREAT PULSE
+          </h2>
+          {SHOW_DEMO_STATS && <span className="rounded border border-warn/40 bg-warn/10 px-1.5 py-0.5 text-[10px] font-mono tracking-widest text-warn">DEMO DATA</span>}
+        </div>
       </div>
 
       <div className="grid grid-cols-3 gap-2">

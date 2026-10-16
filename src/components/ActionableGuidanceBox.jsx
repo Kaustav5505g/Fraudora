@@ -10,10 +10,10 @@ export function ActionableGuidanceBox({ guidance }) {
   const directiveParts = guidance.directive.split('1930');
 
   return (
-    <Card className="border-crit/50 bg-gradient-to-br from-crit/15 to-crit/5 p-4 sm:p-5 space-y-4 shadow-[0_0_40px_-12px_#EF4444]">
+    <Card className="border-risk risk-guidance risk-glow p-4 space-y-3">
       {/* Header */}
       <div className="flex items-center gap-2 border-b border-border-soc pb-3 mb-4">
-        <span className="flex h-7 w-7 items-center justify-center rounded-md bg-crit/15 text-crit">
+        <span className="flex h-7 w-7 items-center justify-center rounded-md bg-risk-soft text-risk">
           <Sparkles size={15} aria-hidden="true" />
         </span>
         <span className="text-xs font-mono uppercase tracking-widest text-ink/80">
@@ -27,7 +27,7 @@ export function ActionableGuidanceBox({ guidance }) {
           <React.Fragment key={index}>
             {part}
             {index < directiveParts.length - 1 && (
-              <span className="mx-1 inline-flex rounded-md bg-crit/20 px-2 py-0.5 text-crit ring-1 ring-crit/40">
+              <span className="mx-1 inline-flex rounded-md bg-risk-soft px-2 py-0.5 text-risk ring-1 ring-current/40">
                 1930
               </span>
             )}

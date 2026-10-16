@@ -1,6 +1,7 @@
 import React from 'react';
 import { LayoutDashboard, ScanSearch } from 'lucide-react';
 import { useUtcClock } from '../hooks/useUtcClock';
+import { SHOW_DEMO_STATS } from '../data/mockData';
 
 /**
  * SOCHeader — sticky global header with status strip.
@@ -62,7 +63,7 @@ export function SOCHeader({ activeView, onViewChange }) {
       <div className="border-t border-border-soc bg-obsidian">
         <div className="mx-auto max-w-[1600px] px-4 sm:px-6 h-7 flex items-center gap-0 overflow-x-auto">
           {[
-            ['RULES', '42'],
+            ...(SHOW_DEMO_STATS ? [['RULES', '42']] : []),
             ['LAYER-1', 'ONLINE'],
             ['LAYER-2', 'ONLINE'],
             ['QUEUE', '0'],

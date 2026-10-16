@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { Activity } from 'lucide-react';
 import { Card } from './ui/Card';
+import { SHOW_DEMO_STATS } from '../data/mockData';
 
 /** Generates a random 8-character uppercase session ID once per mount */
 function genSessionId() {
@@ -40,9 +41,12 @@ export function EngineStatusPanel() {
         <span className="flex h-7 w-7 items-center justify-center rounded-md bg-safe/15 text-safe">
           <Activity size={15} aria-hidden="true" />
         </span>
-        <h2 className="text-xs font-mono uppercase tracking-widest text-ink/80">
-          ENGINE STATUS
-        </h2>
+        <div className="flex flex-1 items-center justify-between gap-2">
+          <h2 className="text-xs font-mono uppercase tracking-widest text-ink/80">
+            ENGINE STATUS
+          </h2>
+          {SHOW_DEMO_STATS && <span className="rounded border border-warn/40 bg-warn/10 px-1.5 py-0.5 text-[10px] font-mono tracking-widest text-warn">DEMO DATA</span>}
+        </div>
       </div>
 
       {/* Status rows */}

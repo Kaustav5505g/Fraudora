@@ -22,8 +22,11 @@ export function ScanButton({ isAnalyzing, isDisabled, onScan }) {
   const [statusIdx, setStatusIdx] = useState(0);
 
   useEffect(() => {
-    if (!isAnalyzing) { setStatusIdx(0); return; }
-    const id = setInterval(() => setStatusIdx((i) => (i + 1) % STATUS_LINES.length), 450);
+    if (!isAnalyzing) {
+      const frameId = requestAnimationFrame(() => setStatusIdx(0));
+      return () => cancelAnimationFrame(frameId);
+    }
+    const id = setInterval(() => setStatusIdx((i) => Math.min(i + 1, STATUS_LINES.length - 1)), 400);
     return () => clearInterval(id);
   }, [isAnalyzing]);
 
@@ -36,6 +39,7 @@ export function ScanButton({ isAnalyzing, isDisabled, onScan }) {
         type="button"
         onClick={onScan}
         disabled={effectivelyDisabled}
+        title={isDisabled && !isAnalyzing ? 'Paste a message first' : undefined}
         aria-busy={isAnalyzing}
         aria-label={isAnalyzing ? 'Analyzing message, please wait' : 'Run scan and triage'}
         className={`w-full flex items-center justify-between gap-3
@@ -43,7 +47,7 @@ export function ScanButton({ isAnalyzing, isDisabled, onScan }) {
           min-h-[52px] transition-all duration-150
           focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent
           ${effectivelyDisabled
-            ? 'bg-ink/40 text-obsidian/60 cursor-not-allowed opacity-40'
+            ? 'bg-accent text-obsidian cursor-not-allowed opacity-60 shadow-none'
             : 'bg-accent text-obsidian font-bold hover:bg-cyan-300 shadow-[0_0_28px_-6px_#22D3EE] active:scale-[0.99]'
           }`}
       >
@@ -78,9 +82,13 @@ export function ScanButton({ isAnalyzing, isDisabled, onScan }) {
           <div className="w-full h-[2px] bg-border-soc rounded-full overflow-hidden">
             <div className="h-full bg-crit/70 rounded-full animate-[progress_1.4s_ease-in-out_infinite]" />
           </div>
-          <p className="font-mono text-xs text-muted-dim tracking-widest">
-            {STATUS_LINES[statusIdx]}
-          </p>
+          <div className="space-y-1" aria-live="polite">
+            {STATUS_LINES.slice(0, statusIdx + 1).map((line) => (
+              <p key={line} className="font-mono text-xs text-muted-dim tracking-widest">
+                {line}
+              </p>
+            ))}
+          </div>
         </div>
       )}
 

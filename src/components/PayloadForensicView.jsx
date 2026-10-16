@@ -23,16 +23,28 @@ export function highlightPayload(text, terms) {
   // We verify with a fresh non-global regex to avoid lastIndex drift.
   const matchRegex = new RegExp(`^(?:${escaped.join('|')})$`, 'i');
   const reasons = {
-    suspended: 'Creates fear about losing account access.',
+    blocked: 'Threatens account access to create fear.',
+    kyc: 'Uses a KYC pretext to request account details.',
     immediately: 'Pressures the reader to act before verifying the message.',
-    'unusual activity': 'Uses a vague security threat to trigger panic.',
+    refund: 'Uses an unexpected refund to lure the reader into a payment flow.',
+    'upi pin': 'A legitimate refund does not require a UPI PIN.',
+    'claim it now': 'Pressures the reader to act without verifying the refund.',
+    'disconnected tonight': 'Uses a service-disconnection threat to create urgency.',
+    'pay immediately': 'Pressures the recipient to pay without verifying the bill.',
+    disconnection: 'Uses a service-disconnection threat to create urgency.',
+    'held at customs': 'Uses a delivery problem to prompt an unexpected payment.',
+    'pay rs 45': 'Requests a fee through an unverified message link.',
+    today: 'Uses a deadline to discourage verification.',
+    selected: 'An unexpected job selection may be a pretext for fees.',
+    'rs 45,000': 'An unusually attractive offer can be used to lure applicants.',
+    'registration fee': 'Legitimate employers should not charge a fee to secure a job.',
   };
   return parts.map((part, i) =>
     matchRegex.test(part) ? (
       <mark
         key={i}
         title={reasons[part.toLowerCase()] || `Flagged risk term: ${part}. Review for social-engineering cues.`}
-        className="bg-crit/20 text-red-200 border-b border-crit/60 rounded-sm px-0.5 not-italic shadow-[0_0_12px_-2px_#EF4444]"
+        className="risk-highlight rounded-sm border-b px-0.5 not-italic"
       >
         {part}
       </mark>
@@ -77,23 +89,21 @@ export function PayloadForensicView({ payload, highlightTerms }) {
       {/* Header with legend */}
       <div className="flex items-center justify-between flex-wrap gap-2 border-b border-border-soc pb-3 mb-4">
         <div className="flex items-center gap-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-md bg-crit/15 text-crit">
+          <span className="flex h-7 w-7 items-center justify-center rounded-md bg-risk-soft text-risk">
             <ScanText size={15} aria-hidden="true" />
           </span>
           <h2 className="text-xs font-mono uppercase tracking-widest text-ink/80">
             PAYLOAD FORENSICS
           </h2>
         </div>
-        {/* Legend */}
-        <div className="flex items-center gap-1.5">
-          <span
-            aria-hidden="true"
-            className="inline-block w-3 h-3 rounded-sm bg-crit/20 border border-crit/40"
-          />
-          <span className="text-xs font-mono text-muted-dim uppercase tracking-widest">
-            {highlightTerms.length} FLAGGED
-          </span>
-        </div>
+        {highlightTerms.length > 0 && (
+          <div className="flex items-center gap-1.5">
+            <span aria-hidden="true" className="inline-block h-3 w-3 rounded-sm border risk-highlight" />
+            <span className="text-xs font-mono text-muted-dim uppercase tracking-widest">
+              {highlightTerms.length} FLAGGED
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Payload inset */}
@@ -107,6 +117,11 @@ export function PayloadForensicView({ payload, highlightTerms }) {
             return <TextSegment key={idx} text={seg.content} terms={highlightTerms} />;
           })}
         </p>
+        {highlightTerms.length === 0 && (
+          <p className="mt-3 border-t border-border-soc pt-3 text-sm font-mono text-safe">
+            No manipulation tactics detected
+          </p>
+        )}
       </div>
     </Card>
   );
@@ -123,12 +138,12 @@ function DefangedUrl({ url }) {
   return (
     <span
       title="Link disabled for safety"
-      className="inline-flex items-center gap-1.5 my-0.5 mx-0.5 px-2 py-0.5 rounded border border-crit/50 bg-crit/10 font-mono text-[12px] text-red-300 break-all"
+      className="risk-highlight inline-flex items-center gap-1.5 my-0.5 mx-0.5 rounded border px-2 py-0.5 font-mono text-xs break-all"
       aria-label={`Defanged URL: ${url}`}
     >
-      <Link2 size={11} className="shrink-0 text-crit/70" />
+      <Link2 size={11} className="shrink-0 text-risk" />
       <span className="break-all">{url}</span>
-      <span className="ml-1 shrink-0 text-[9px] font-mono uppercase tracking-widest border border-crit/30 text-crit/70 px-1 rounded">
+      <span className="ml-1 shrink-0 rounded border border-current px-1 text-[9px] font-mono uppercase tracking-widest text-risk">
         DEFANGED
       </span>
     </span>

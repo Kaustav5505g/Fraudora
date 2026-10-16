@@ -6,6 +6,7 @@ import { ScanButton } from './ScanButton';
 import { ThreatPulse } from './ThreatPulse';
 import { EngineStatusPanel } from './EngineStatusPanel';
 import { RecentScans } from './RecentScans';
+import { SHOW_DEMO_STATS } from '../data/mockData';
 
 /**
  * WorkspaceView — 12-col grid layout on lg+, stacked on mobile.
@@ -59,13 +60,13 @@ export function WorkspaceView({
         role="main"
         aria-label="Payload workspace"
         /* pb-7 clears the fixed 28px bottom status bar */
-        className="flex-1 px-4 sm:px-6 lg:px-8 py-8 sm:py-10 pb-14 animate-fade-in max-w-[1600px] mx-auto w-full"
+        className="flex-1 px-4 sm:px-6 lg:px-8 pt-8 pb-14 animate-fade-in max-w-[1600px] mx-auto w-full"
       >
         {/* ── 12-column grid ── */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
 
           {/* ── LEFT COLUMN (col-span-7) ── */}
-          <section className="lg:col-span-7 space-y-6 stagger-children" aria-label="Message input">
+          <section className={`${SHOW_DEMO_STATS ? 'lg:col-span-7' : 'lg:col-span-12'} space-y-6 stagger-children`} aria-label="Message input">
             <HeroHeader />
             <PayloadInputBox
               payload={payload}
@@ -83,11 +84,13 @@ export function WorkspaceView({
           </section>
 
           {/* ── RIGHT COLUMN (col-span-5) ── */}
-          <aside className="lg:col-span-5 space-y-4 lg:sticky lg:top-24 stagger-children" aria-label="Engine status and recent scans">
-            <ThreatPulse />
-            <EngineStatusPanel />
-            <RecentScans onOpenForensic={onShowForensic} />
-          </aside>
+          {SHOW_DEMO_STATS && (
+            <aside className="lg:col-span-5 space-y-4 lg:sticky lg:top-24 stagger-children" aria-label="Demo engine statistics and recent scans">
+              <ThreatPulse />
+              <EngineStatusPanel />
+              <RecentScans onOpenForensic={onShowForensic} />
+            </aside>
+          )}
         </div>
       </main>
 
@@ -101,7 +104,7 @@ export function WorkspaceView({
             FRAUDORA v0.1 // CORE2DUO
           </span>
           <span className="font-mono text-[10px] text-muted-dim tracking-widest">
-            NO PAYLOAD DATA STORED · LOCAL ANALYSIS
+            MESSAGES ARE NOT STORED
           </span>
         </div>
       </div>

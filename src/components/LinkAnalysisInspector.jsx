@@ -10,7 +10,7 @@ function HighlightedLabel({ label }) {
       return (
         <span key={index}>
           {part[0]}
-          <span className="text-crit underline decoration-wavy">{part[1]}</span>
+          <span className="text-risk underline decoration-wavy">{part[1]}</span>
           {part.slice(2)}
         </span>
       );
@@ -30,7 +30,7 @@ function DomainSegments({ domain }) {
   return (
     <span className="break-all">
       {subdomain && <span className="text-warn">{subdomain}.</span>}
-      <span className="text-crit"><HighlightedLabel label={registrableLabel} /></span>
+      <span className="text-risk"><HighlightedLabel label={registrableLabel} /></span>
       {suffix && <span className="text-ink">.{suffix}</span>}
     </span>
   );
@@ -42,11 +42,19 @@ function DomainSegments({ domain }) {
  */
 export function LinkAnalysisInspector({ linkAnalysis }) {
   const ageDays = Number.parseInt(linkAnalysis.domainAge, 10) || 0;
+  const hasLink = linkAnalysis.normalizedDomain !== 'No link detected';
+  const expectedDomain = linkAnalysis.normalizedDomain.includes('sbi')
+    ? 'sbi.co.in'
+    : linkAnalysis.normalizedDomain.includes('upi')
+      ? 'npci.org.in'
+      : linkAnalysis.normalizedDomain.includes('electricity')
+        ? 'Official electricity provider'
+        : 'Official courier website';
 
   return (
-    <Card className="p-4 sm:p-5 space-y-4">
+    <Card className="p-4 space-y-3">
       <div className="flex items-center gap-2 border-b border-border-soc pb-3 mb-4">
-        <span className="flex h-7 w-7 items-center justify-center rounded-md bg-crit/15 text-crit">
+        <span className="flex h-7 w-7 items-center justify-center rounded-md bg-risk-soft text-risk">
           <Globe size={15} aria-hidden="true" />
         </span>
         <h2 className="text-xs font-mono uppercase tracking-widest text-ink/80">
@@ -54,47 +62,47 @@ export function LinkAnalysisInspector({ linkAnalysis }) {
         </h2>
       </div>
 
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+      {hasLink ? <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         <div className="min-w-0 rounded-md border border-safe/30 bg-safe/5 p-3">
           <p className="flex items-center gap-1.5 text-xs font-mono tracking-widest text-safe">
             <Check size={13} aria-hidden="true" />
             EXPECTED
           </p>
-          <p className="mt-1 break-all font-mono text-[13px] text-safe">natwest.co.uk</p>
+          <p className="mt-1 break-all font-mono text-xs text-safe">{expectedDomain}</p>
         </div>
-        <div className="min-w-0 rounded-md border border-crit/30 bg-crit/5 p-3">
-          <p className="flex items-center gap-1.5 text-xs font-mono tracking-widest text-crit">
+        <div className="min-w-0 rounded-md border border-risk bg-risk-soft p-3">
+          <p className="flex items-center gap-1.5 text-xs font-mono tracking-widest text-risk">
             <X size={13} aria-hidden="true" />
             ACTUAL
           </p>
-          <p className="mt-1 break-all font-mono text-[13px] text-crit">
+          <p className="mt-1 break-all font-mono text-xs text-risk">
             <DomainSegments domain={linkAnalysis.normalizedDomain} />
           </p>
         </div>
-      </div>
+      </div> : <p className="rounded-md border border-safe/30 bg-safe/5 p-3 text-xs font-mono text-safe">No URL found in this message.</p>}
 
       <dl className="space-y-3">
-        <Row label="Normalized Domain">
+        {hasLink && <Row label="Normalized Domain">
           <span className="font-mono text-[13px] text-ink">
             <DomainSegments domain={linkAnalysis.normalizedDomain} />
           </span>
-        </Row>
+        </Row>}
 
         <Row label="Reputation">
-          <Badge className="bg-crit/15 text-crit border border-crit/30">
+          <Badge className={hasLink ? 'bg-risk-soft text-risk border border-risk' : 'bg-safe/10 text-safe border border-safe/30'}>
             {linkAnalysis.reputation}
           </Badge>
         </Row>
 
-        <Row label="Domain Age">
+        {hasLink && <Row label="Domain Age">
           <div className="w-full max-w-sm space-y-2">
-            <span className="font-mono text-[13px] tabular-nums text-warn">
+            <span className="font-mono text-xs tabular-nums text-risk">
               {linkAnalysis.domainAge}
             </span>
             <div className="relative pt-1">
               <div className="h-1.5 overflow-hidden rounded-full bg-border-soc">
                 <span
-                  className="block h-full rounded-full bg-warn"
+                  className="block h-full rounded-full bg-risk-soft"
                   style={{ width: `${Math.min((ageDays / 30) * 100, 100)}%` }}
                 />
               </div>
@@ -107,11 +115,11 @@ export function LinkAnalysisInspector({ linkAnalysis }) {
               </span>
             </div>
           </div>
-        </Row>
+        </Row>}
 
-        <Row label="Registrar">
+        {hasLink && <Row label="Registrar">
           <span className="font-mono text-[13px] text-ink">{linkAnalysis.registrar}</span>
-        </Row>
+        </Row>}
       </dl>
 
       <p className="border-t border-border-soc pt-3 text-xs font-mono text-muted-dim">

@@ -67,15 +67,50 @@ body::after {
 
 @keyframes triageGlow {
   0%, 100% {
-    box-shadow: 0 0 0 1px rgb(239 68 68 / 18%), 0 0 20px -12px rgb(239 68 68 / 65%);
+    box-shadow: 0 0 0 1px rgb(var(--risk-color-rgb) / 18%), 0 0 20px -12px rgb(var(--risk-color-rgb) / 65%);
   }
   50% {
-    box-shadow: 0 0 0 1px rgb(239 68 68 / 42%), 0 0 34px -10px rgb(239 68 68 / 85%);
+    box-shadow: 0 0 0 1px rgb(var(--risk-color-rgb) / 42%), 0 0 34px -10px rgb(var(--risk-color-rgb) / 85%);
   }
 }
 
 .animate-triage-glow {
   animation: triageGlow 3s ease-in-out infinite;
+}
+
+.risk-banner {
+  background: linear-gradient(90deg, rgb(var(--risk-color-rgb) / 0.15), rgb(var(--risk-color-rgb) / 0.05), transparent);
+}
+
+.border-risk {
+  border-color: var(--risk-color);
+}
+
+.text-risk {
+  color: var(--risk-color);
+}
+
+.bg-risk-soft {
+  background-color: rgb(var(--risk-color-rgb) / 0.15);
+}
+
+.risk-guidance {
+  background: linear-gradient(135deg, rgb(var(--risk-color-rgb) / 0.15), rgb(var(--risk-color-rgb) / 0.05));
+}
+
+.risk-highlight {
+  color: color-mix(in srgb, var(--risk-color) 65%, white);
+  background-color: rgb(var(--risk-color-rgb) / 0.18);
+  border-color: rgb(var(--risk-color-rgb) / 0.65);
+  box-shadow: 0 0 12px -2px var(--risk-color);
+}
+
+.risk-glow {
+  box-shadow: 0 0 40px -12px var(--risk-color);
+}
+
+.risk-ring {
+  box-shadow: 0 0 18px -7px var(--risk-color);
 }
 
 .stagger-children > .stagger-fade-in:nth-child(1) { animation-delay: 0ms; }

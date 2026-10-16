@@ -3,24 +3,10 @@ import { SOCHeader } from './components/SOCHeader';
 import { WorkspaceView } from './components/WorkspaceView';
 import { ForensicDashboard } from './components/ForensicDashboard';
 import { Toast } from './components/ui/Toast';
-import { SCAN_RESULT } from './data/mockData';
+import { analyzeMessage, SCAN_RESULT } from './data/mockData';
 
 // ─── Validation constants ─────────────────────────────────────────────────────
 const MIN_LEN = 10;
-
-/**
- * analyzeMessage — async stub that simulates a backend call (~1800 ms).
- * SWAP THIS for a real fetch('/api/analyze', { method: 'POST', body: payload })
- * when the backend is ready.
- *
- * @param {string} _payload - the raw message to analyze
- * @returns {Promise<typeof SCAN_RESULT>}
- */
-async function analyzeMessage(_payload) {
-  return new Promise((resolve) =>
-    setTimeout(() => resolve(SCAN_RESULT), 1800)
-  );
-}
 
 /** Initial banner status */
 const DEFAULT_STATUS = 'REVIEW REQUIRED — Analyst Action Needed';

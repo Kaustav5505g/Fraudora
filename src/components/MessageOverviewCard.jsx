@@ -39,26 +39,24 @@ export function MessageOverviewCard({ overview }) {
   ];
 
   return (
-    <Card className="p-4 sm:p-5 space-y-4">
-      {/* Header */}
-      <div className="flex items-center gap-2 border-b border-border-soc pb-3 mb-4">
+    <Card className="p-4">
+      <details>
+        <summary className="flex cursor-pointer list-none items-center gap-2 border-b border-border-soc pb-3 text-xs font-mono uppercase tracking-widest text-ink/80 marker:hidden">
         <span className="flex h-7 w-7 items-center justify-center rounded-md bg-accent/15 text-accent">
           <FileText size={15} aria-hidden="true" />
         </span>
-        <h2 className="text-xs font-mono uppercase tracking-widest text-ink/80">
-          MESSAGE OVERVIEW
-        </h2>
-      </div>
+          <span>Technical details</span>
+        </summary>
 
-      {/* Grid */}
-      <dl className="grid grid-cols-2 xl:grid-cols-3 gap-x-6 gap-y-4">
-        {fields.map(({ label, value }) => (
-          <div key={label} className="min-w-0">
-            <FieldLabel>{label}</FieldLabel>
-            <FieldValue>{value}</FieldValue>
-          </div>
-        ))}
-      </dl>
+        <dl className="grid grid-cols-2 gap-x-4 gap-y-3 pt-4 sm:grid-cols-3">
+          {fields.map(({ label, value }) => (
+            <div key={label} className="min-w-0">
+              <FieldLabel>{label}</FieldLabel>
+              <FieldValue>{value}</FieldValue>
+            </div>
+          ))}
+        </dl>
+      </details>
     </Card>
   );
 }

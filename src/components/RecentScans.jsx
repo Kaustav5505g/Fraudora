@@ -1,7 +1,7 @@
 import React from 'react';
 import { Clock } from 'lucide-react';
 import { Card } from './ui/Card';
-import { RECENT_SCANS, RISK_LEVELS } from '../data/mockData';
+import { RECENT_SCANS, RISK_LEVELS, SHOW_DEMO_STATS } from '../data/mockData';
 
 /**
  * RecentScans — right-column card showing the last 4 scan results.
@@ -17,9 +17,12 @@ export function RecentScans({ onOpenForensic }) {
         <span className="flex h-7 w-7 items-center justify-center rounded-md bg-accent/15 text-accent">
           <Clock size={15} aria-hidden="true" />
         </span>
-        <h2 className="text-xs font-mono uppercase tracking-widest text-ink/80">
-          RECENT SCANS
-        </h2>
+        <div className="flex flex-1 items-center justify-between gap-2">
+          <h2 className="text-xs font-mono uppercase tracking-widest text-ink/80">
+            RECENT SCANS
+          </h2>
+          {SHOW_DEMO_STATS && <span className="rounded border border-warn/40 bg-warn/10 px-1.5 py-0.5 text-[10px] font-mono tracking-widest text-warn">DEMO DATA</span>}
+        </div>
       </div>
 
       {/* Scan rows */}
