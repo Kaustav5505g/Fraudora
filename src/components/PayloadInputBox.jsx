@@ -229,7 +229,7 @@ export function PayloadInputBox({ payload, onChange, error, onClear, isAnalyzing
         <ReadoutDivider />
         <ReadoutItem label="URLS" value={`${urls.length}`} crit={urls.length > 0} />
         <ReadoutDivider />
-        <ReadoutItem label="LANG" value="en-GB" />
+        <ReadoutItem label="LANG" value="en-IN" />
 
         {/* Defanged URL chips */}
         {urls.map((url, i) => (
