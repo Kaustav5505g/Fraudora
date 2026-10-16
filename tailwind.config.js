@@ -5,11 +5,11 @@ export default {
     extend: {
       colors: {
         accent: '#4F46E5',
-        obsidian: '#F6F7FB',
-        surface: '#FFFFFF',
-        'border-soc': '#E2E8F0',
-        ink: '#0F172A',
-        muted: '#475569',
+        obsidian: '#0b0f19',
+        surface: '#1f2937',
+        'border-soc': '#374151',
+        ink: '#f9fafb',
+        muted: '#9ca3af',
         'muted-dim': '#64748B',
         safe: '#059669',
         warn: '#D97706',
