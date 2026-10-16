@@ -73,10 +73,10 @@ export function VerdictCard({ result, onNewScan }) {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
           <span
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white"
+            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white"
             style={{ color: risk.strong }}
           >
-            <Icon size={27} aria-hidden="true" />
+            <Icon size={30} aria-hidden="true" />
           </span>
           <div>
             <p className="text-sm font-semibold" style={{ color: risk.strong }}>
@@ -114,7 +114,7 @@ export function VerdictCard({ result, onNewScan }) {
           <div className="h-full rounded-full transition-[width] duration-300" style={{ width: `${result.score}%`, backgroundColor: risk.strong }} />
         </div>
       </div>
-      <p className="mt-4 text-lg font-bold leading-7 text-ink sm:text-xl">
+      <p className="mt-4 text-xl font-bold leading-8 text-ink sm:text-2xl">
         {result.guidance.directive}
       </p>
     </Card>
@@ -145,7 +145,7 @@ export function WhatToDoNowCard({ result, onToast }) {
     onToast('Message marked as safe.', 'success');
   }
 
-  function handleShare(event) {
+  function handleShare() {
     if (!navigator.clipboard?.writeText) {
       onToast('Sharing is ready. Copy the warning from your browser if needed.', 'info');
       return;
@@ -153,7 +153,6 @@ export function WhatToDoNowCard({ result, onToast }) {
     navigator.clipboard.writeText(warning)
       .then(() => onToast('Warning copied', 'success'))
       .catch(() => onToast('Could not copy the warning. You can still share it in WhatsApp.', 'warn'));
-    if (event.currentTarget.href !== shareUrl) event.preventDefault();
   }
 
   return (
@@ -312,7 +311,7 @@ export function LinkCard({ result }) {
   return (
     <ResultCard title="Check the link" icon={Link2}>
       <p className="text-sm font-medium text-secondary">Message link (not clickable)</p>
-      <p className="mt-1 break-all rounded-xl bg-red-50 px-3 py-2 font-mono text-sm leading-6 text-red-800">
+      <p className="mt-1 break-all rounded-xl bg-red-50 px-3 py-2 text-sm leading-6 text-red-800">
         {defangUrl(link.url)}
       </p>
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -326,7 +325,7 @@ export function LinkCard({ result }) {
           <p className="flex items-center gap-1.5 text-sm font-semibold text-red-800">
             <XCircle size={16} aria-hidden="true" /> Actual
           </p>
-          <p className="mt-1 font-mono text-sm leading-6"><DomainLabel domain={link.actualDomain} /></p>
+          <p className="mt-1 text-sm leading-6"><DomainLabel domain={link.actualDomain} /></p>
         </div>
       </div>
       <p className="mt-3 flex items-center gap-2 text-sm text-secondary">
