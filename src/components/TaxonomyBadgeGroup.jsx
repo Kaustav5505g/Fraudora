@@ -1,5 +1,5 @@
 import React from 'react';
-import { Network, ExternalLink } from 'lucide-react';
+import { Network, ExternalLink, Fingerprint, Link2 } from 'lucide-react';
 import { Card } from './ui/Card';
 import { Badge } from './ui/Badge';
 
@@ -11,9 +11,11 @@ export function TaxonomyBadgeGroup({ taxonomy }) {
   return (
     <Card className="p-4 sm:p-5 space-y-4">
       {/* Header */}
-      <div className="flex items-center gap-2">
-        <Network size={14} className="text-muted-dim shrink-0" />
-        <h2 className="text-[11px] font-mono uppercase tracking-widest text-muted-dim">
+      <div className="flex items-center gap-2 border-b border-border-soc pb-3 mb-4">
+        <span className="flex h-7 w-7 items-center justify-center rounded-md bg-crit/15 text-crit">
+          <Network size={15} aria-hidden="true" />
+        </span>
+        <h2 className="text-xs font-mono uppercase tracking-widest text-ink/80">
           THREAT TAXONOMY
         </h2>
       </div>
@@ -22,11 +24,12 @@ export function TaxonomyBadgeGroup({ taxonomy }) {
       <dl className="space-y-3">
         {/* Primary */}
         <div className="flex items-center gap-3 flex-wrap">
-          <dt className="text-[11px] font-mono uppercase tracking-widest text-muted-dim w-20 shrink-0">
+          <dt className="text-xs font-mono uppercase tracking-widest text-muted-dim w-20 shrink-0">
             Primary
           </dt>
           <dd>
-            <Badge className="bg-crit/15 text-crit border border-crit/30">
+            <Badge className="bg-crit/15 text-crit border border-crit/30 px-3 py-1.5 text-[13px]">
+              <Fingerprint size={13} aria-hidden="true" />
               {taxonomy.primary}
             </Badge>
           </dd>
@@ -34,11 +37,12 @@ export function TaxonomyBadgeGroup({ taxonomy }) {
 
         {/* Secondary */}
         <div className="flex items-center gap-3 flex-wrap">
-          <dt className="text-[11px] font-mono uppercase tracking-widest text-muted-dim w-20 shrink-0">
+          <dt className="text-xs font-mono uppercase tracking-widest text-muted-dim w-20 shrink-0">
             Secondary
           </dt>
           <dd>
-            <Badge className="bg-warn/15 text-warn border border-warn/30">
+            <Badge className="bg-warn/15 text-warn border border-warn/30 px-3 py-1.5 text-[13px]">
+              <Link2 size={13} aria-hidden="true" />
               {taxonomy.secondary}
             </Badge>
           </dd>
@@ -46,7 +50,7 @@ export function TaxonomyBadgeGroup({ taxonomy }) {
 
         {/* MITRE ATT&CK */}
         <div className="flex items-center gap-3 flex-wrap">
-          <dt className="text-[11px] font-mono uppercase tracking-widest text-muted-dim w-20 shrink-0">
+          <dt className="text-xs font-mono uppercase tracking-widest text-muted-dim w-20 shrink-0">
             MITRE
           </dt>
           <dd>
@@ -55,11 +59,11 @@ export function TaxonomyBadgeGroup({ taxonomy }) {
               target="_blank"
               rel="noopener noreferrer"
               aria-label={`MITRE ATT&CK ${taxonomy.mitre.id}: ${taxonomy.mitre.label} (opens in new tab)`}
-              className="inline-flex items-center gap-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ink rounded"
+              className="inline-flex items-center gap-1 rounded text-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent"
             >
-              <Badge className="bg-surface border border-border-soc text-muted hover:border-muted-dim transition-colors duration-150">
+              <Badge className="bg-surface border border-border-soc px-3 py-1.5 text-[13px] text-accent hover:border-accent/50 transition-colors duration-150">
                 {taxonomy.mitre.id}
-                <ExternalLink size={9} />
+                <ExternalLink size={12} />
               </Badge>
             </a>
           </dd>

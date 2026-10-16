@@ -16,7 +16,7 @@ const ICON_MAP = { Landmark, Package, GraduationCap, Users, ShieldCheck };
 export function QuickTestChips({ activeSampleId, onSelect }) {
   return (
     <div className="space-y-2">
-      <p className="text-[11px] font-mono uppercase tracking-widest text-muted-dim">
+      <p className="text-xs font-mono uppercase tracking-widest text-muted-dim">
         QUICK TEST SAMPLES
       </p>
 
@@ -26,6 +26,11 @@ export function QuickTestChips({ activeSampleId, onSelect }) {
           const Icon = ICON_MAP[icon] ?? Landmark;
           const rl = RISK_LEVELS[risk] ?? RISK_LEVELS.suspicious;
           const isActive = activeSampleId === id;
+          const stripeClass = risk === 'critical'
+            ? 'bg-crit'
+            : risk === 'safe'
+              ? 'bg-safe'
+              : 'bg-warn';
 
           return (
             <button
@@ -33,14 +38,15 @@ export function QuickTestChips({ activeSampleId, onSelect }) {
               type="button"
               onClick={() => onSelect(payload, id)}
               aria-pressed={isActive}
-              className={`group flex items-start gap-3 p-3 rounded-lg border text-left
-                transition-colors duration-150 min-h-[64px]
-                focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ink
+              className={`group relative flex items-start gap-3 p-3 pl-4 rounded-lg border text-left
+                transition-all duration-150 hover:-translate-y-0.5 min-h-[64px]
+                focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent
                 ${isActive
-                  ? 'border-ink/30 bg-white/5'
-                  : 'border-border-soc bg-surface hover:border-[#525866] hover:bg-white/5'
+                  ? 'ring-1 ring-accent border-accent/50 bg-white/5'
+                  : 'border-border-soc bg-surface hover:border-[#3B4150] hover:bg-white/5'
                 }`}
             >
+              <span aria-hidden="true" className={`absolute inset-y-0 left-0 w-[3px] rounded-l-lg ${stripeClass}`} />
               {/* Icon */}
               <div className={`shrink-0 mt-0.5 transition-colors duration-150
                 ${isActive ? 'text-ink' : 'text-muted-dim group-hover:text-muted'}`}>

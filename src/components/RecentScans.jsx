@@ -13,9 +13,11 @@ export function RecentScans({ onOpenForensic }) {
   return (
     <Card className="p-4 sm:p-5 space-y-4">
       {/* Header */}
-      <div className="flex items-center gap-2">
-        <Clock size={14} className="text-muted-dim shrink-0" />
-        <h2 className="text-[11px] font-mono uppercase tracking-widest text-muted-dim">
+      <div className="flex items-center gap-2 border-b border-border-soc pb-3 mb-4">
+        <span className="flex h-7 w-7 items-center justify-center rounded-md bg-accent/15 text-accent">
+          <Clock size={15} aria-hidden="true" />
+        </span>
+        <h2 className="text-xs font-mono uppercase tracking-widest text-ink/80">
           RECENT SCANS
         </h2>
       </div>
@@ -32,17 +34,18 @@ export function RecentScans({ onOpenForensic }) {
                 type="button"
                 onClick={onOpenForensic}
                 aria-label={`View scan: ${scan.sender}, score ${scan.score}, ${rl.label}`}
-                className="w-full flex items-center justify-between gap-3 py-2.5 text-left
-                  hover:bg-white/3 transition-colors duration-150 rounded
-                  focus-visible:outline focus-visible:outline-2 focus-visible:outline-ink focus-visible:outline-offset-1
+                className="relative w-full flex items-center justify-between gap-2 py-2.5 pl-3 text-left
+                  hover:bg-white/5 transition-colors duration-150 rounded
+                  focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-1
                   min-w-0 group"
               >
+                <span aria-hidden="true" className={`absolute inset-y-2 left-0 w-[3px] rounded-full ${rl.dotClass}`} />
                 {/* Time + sender */}
                 <div className="flex items-center gap-2 min-w-0 flex-1">
-                  <span className="font-mono text-[10px] text-muted-dim tabular-nums shrink-0">
+                  <span className="font-mono text-xs text-muted-dim tabular-nums shrink-0">
                     {scan.time}
                   </span>
-                  <span className="font-mono text-[12px] text-muted truncate group-hover:text-ink transition-colors duration-150">
+                  <span className="font-mono text-[13px] text-muted truncate group-hover:text-ink transition-colors duration-150">
                     {scan.sender}
                   </span>
                 </div>
@@ -53,10 +56,13 @@ export function RecentScans({ onOpenForensic }) {
                     className={`inline-block w-1.5 h-1.5 rounded-full ${rl.dotClass}`}
                     aria-hidden="true"
                   />
-                  <span className={`font-mono text-[12px] font-semibold tabular-nums ${rl.colorClass}`}>
+                  <span className={`font-mono text-[13px] font-semibold tabular-nums ${rl.colorClass}`}>
                     {scoreStr}
                   </span>
-                  <span className={`font-mono text-[10px] tracking-widest uppercase ${rl.colorClass}`}>
+                  <span className="w-10 h-1.5 rounded-full bg-border-soc overflow-hidden" aria-hidden="true">
+                    <span className={`block h-full rounded-full ${rl.dotClass}`} style={{ width: `${scan.score}%` }} />
+                  </span>
+                  <span className={`hidden sm:inline font-mono text-xs tracking-widest uppercase ${rl.colorClass}`}>
                     {rl.shortLabel}
                   </span>
                 </div>

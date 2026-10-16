@@ -7,23 +7,36 @@ import { Card } from './ui/Card';
  * @param {{ guidance: { directive, explanation, countermeasures: string[] } }} props
  */
 export function ActionableGuidanceBox({ guidance }) {
+  const directiveParts = guidance.directive.split('1930');
+
   return (
-    <Card className="border-crit/50 bg-crit/5 p-4 sm:p-5 space-y-4">
+    <Card className="border-crit/50 bg-gradient-to-br from-crit/15 to-crit/5 p-4 sm:p-5 space-y-4 shadow-[0_0_40px_-12px_#EF4444]">
       {/* Header */}
-      <div className="flex items-center gap-2">
-        <Sparkles size={14} className="text-crit shrink-0" />
-        <span className="text-[11px] font-mono uppercase tracking-widest text-crit">
+      <div className="flex items-center gap-2 border-b border-border-soc pb-3 mb-4">
+        <span className="flex h-7 w-7 items-center justify-center rounded-md bg-crit/15 text-crit">
+          <Sparkles size={15} aria-hidden="true" />
+        </span>
+        <span className="text-xs font-mono uppercase tracking-widest text-ink/80">
           LAYER 2 // AI GUIDANCE
         </span>
       </div>
 
       {/* Directive */}
-      <p className="font-mono font-bold text-xl text-ink leading-tight">
-        {guidance.directive}
+      <p className="font-mono text-3xl font-bold text-ink leading-tight md:text-4xl">
+        {directiveParts.map((part, index) => (
+          <React.Fragment key={index}>
+            {part}
+            {index < directiveParts.length - 1 && (
+              <span className="mx-1 inline-flex rounded-md bg-crit/20 px-2 py-0.5 text-crit ring-1 ring-crit/40">
+                1930
+              </span>
+            )}
+          </React.Fragment>
+        ))}
       </p>
 
       {/* Explanation */}
-      <p className="text-[13px] text-muted leading-relaxed">
+      <p className="text-[15px] text-ink/90 leading-relaxed">
         {guidance.explanation}
       </p>
 
@@ -36,7 +49,7 @@ export function ActionableGuidanceBox({ guidance }) {
               className="text-safe shrink-0 mt-0.5"
               aria-hidden="true"
             />
-            <span className="text-[13px] text-muted leading-relaxed">{item}</span>
+            <span className="text-[15px] text-ink/90 leading-relaxed">{item}</span>
           </li>
         ))}
       </ul>

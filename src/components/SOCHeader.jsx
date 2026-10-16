@@ -30,7 +30,7 @@ export function SOCHeader({ activeView, onViewChange }) {
           </div>
 
           {/* Center metadata — desktop only; labels dim, values bright */}
-          <div className="hidden md:flex items-center font-mono text-[11px] tracking-widest whitespace-nowrap divide-x divide-border-soc">
+          <div className="hidden md:flex items-center font-mono text-xs tracking-widest whitespace-nowrap divide-x divide-border-soc">
             <div className="flex items-center gap-1.5 px-4 first:pl-0">
               <span className="text-muted-dim">ENGINE:</span>
               <span className="text-ink">HYBRID-v3.2</span>
@@ -46,7 +46,7 @@ export function SOCHeader({ activeView, onViewChange }) {
         </div>
 
         {/* ── Mobile second row: metadata ── */}
-        <div className="flex md:hidden items-center gap-3 pb-2 font-mono text-[10px] tracking-widest divide-x divide-border-soc">
+        <div className="flex md:hidden items-center gap-3 pb-2 font-mono text-xs tracking-widest divide-x divide-border-soc">
           <div className="flex items-center gap-1 pr-3">
             <span className="text-muted-dim">ENGINE:</span>
             <span className="text-ink">HYBRID-v3.2</span>
@@ -103,9 +103,9 @@ function ViewToggle({ activeView, onViewChange }) {
             onClick={() => onViewChange(id)}
             aria-pressed={isActive}
             aria-label={label}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-[11px] font-mono font-medium tracking-widest transition-colors duration-150
-              min-h-[36px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ink
-              ${isActive ? 'bg-surface text-ink' : 'text-muted-dim hover:text-muted'}`}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-mono font-medium tracking-widest transition-colors duration-150
+            min-h-[36px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent
+            ${isActive ? 'bg-accent text-obsidian' : 'text-muted-dim hover:text-accent'}`}
           >
             <Icon size={13} />
             <span className="hidden sm:inline">{label}</span>

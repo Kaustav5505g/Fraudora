@@ -22,11 +22,17 @@ export function highlightPayload(text, terms) {
   // After split with a capture group regex, even-indexed parts are text, odd-indexed are matches.
   // We verify with a fresh non-global regex to avoid lastIndex drift.
   const matchRegex = new RegExp(`^(?:${escaped.join('|')})$`, 'i');
+  const reasons = {
+    suspended: 'Creates fear about losing account access.',
+    immediately: 'Pressures the reader to act before verifying the message.',
+    'unusual activity': 'Uses a vague security threat to trigger panic.',
+  };
   return parts.map((part, i) =>
     matchRegex.test(part) ? (
       <mark
         key={i}
-        className="bg-crit/20 text-red-200 border-b border-crit/60 rounded-sm px-0.5 not-italic"
+        title={reasons[part.toLowerCase()] || `Flagged risk term: ${part}. Review for social-engineering cues.`}
+        className="bg-crit/20 text-red-200 border-b border-crit/60 rounded-sm px-0.5 not-italic shadow-[0_0_12px_-2px_#EF4444]"
       >
         {part}
       </mark>
@@ -69,10 +75,12 @@ export function PayloadForensicView({ payload, highlightTerms }) {
   return (
     <Card className="p-4 sm:p-5 space-y-4">
       {/* Header with legend */}
-      <div className="flex items-center justify-between flex-wrap gap-2">
+      <div className="flex items-center justify-between flex-wrap gap-2 border-b border-border-soc pb-3 mb-4">
         <div className="flex items-center gap-2">
-          <ScanText size={14} className="text-muted-dim shrink-0" />
-          <h2 className="text-[11px] font-mono uppercase tracking-widest text-muted-dim">
+          <span className="flex h-7 w-7 items-center justify-center rounded-md bg-crit/15 text-crit">
+            <ScanText size={15} aria-hidden="true" />
+          </span>
+          <h2 className="text-xs font-mono uppercase tracking-widest text-ink/80">
             PAYLOAD FORENSICS
           </h2>
         </div>
@@ -82,15 +90,15 @@ export function PayloadForensicView({ payload, highlightTerms }) {
             aria-hidden="true"
             className="inline-block w-3 h-3 rounded-sm bg-crit/20 border border-crit/40"
           />
-          <span className="text-[10px] font-mono text-muted-dim uppercase tracking-widest">
-            Manipulation / Risk Term
+          <span className="text-xs font-mono text-muted-dim uppercase tracking-widest">
+            {highlightTerms.length} FLAGGED
           </span>
         </div>
       </div>
 
       {/* Payload inset */}
       <div className="rounded-md border border-border-soc bg-[#0B0D11] px-4 py-3">
-        <p className="font-mono text-[13px] text-ink leading-relaxed whitespace-pre-wrap break-words">
+        <p className="font-mono text-[15px] text-ink/90 leading-7 whitespace-pre-wrap break-words">
           {segments.map((seg, idx) => {
             if (seg.type === 'url') {
               return <DefangedUrl key={idx} url={seg.content} />;

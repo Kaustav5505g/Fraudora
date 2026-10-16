@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useMemo } from 'react';
-import { AlertCircle, Eraser } from 'lucide-react';
+import { AlertCircle, Eraser, ShieldAlert } from 'lucide-react';
 
 const MAX_LEN = 1600;
 const WARN_THRESHOLD = 0.9;
@@ -57,9 +57,9 @@ export function PayloadInputBox({ payload, onChange, error, onClear, isAnalyzing
     return () => ta.removeEventListener('scroll', sync);
   }, []);
 
-  // Line numbers — count newlines in payload, minimum 12 lines shown
+  // Line numbers — count newlines in payload, minimum 8 lines shown
   const lineNumbers = useMemo(() => {
-    const count = Math.max(payload.split('\n').length, 12);
+    const count = Math.max(payload.split('\n').length, 8);
     return Array.from({ length: count }, (_, i) => i + 1);
   }, [payload]);
 
@@ -83,7 +83,7 @@ export function PayloadInputBox({ payload, onChange, error, onClear, isAnalyzing
     <div className="space-y-1.5">
       {/* ── Label row ── */}
       <div className="flex items-center justify-between">
-        <label htmlFor="payload-input" className="text-[11px] font-mono uppercase tracking-widest text-muted-dim">
+        <label htmlFor="payload-input" className="text-xs font-mono uppercase tracking-widest text-muted-dim">
           INPUT PAYLOAD
         </label>
         <div className="flex items-center gap-3">
@@ -92,14 +92,14 @@ export function PayloadInputBox({ payload, onChange, error, onClear, isAnalyzing
               type="button"
               onClick={onClear}
               aria-label="Clear payload"
-              className="flex items-center gap-1 text-[11px] font-mono text-muted-dim hover:text-muted transition-colors duration-150"
+              className="flex items-center gap-1 text-xs font-mono text-muted-dim hover:text-muted transition-colors duration-150"
             >
               <Eraser size={12} />
               CLEAR
             </button>
           )}
           <span
-            className={`text-[11px] font-mono tabular-nums transition-colors duration-150
+            className={`text-xs font-mono tabular-nums transition-colors duration-150
               ${isAtLimit ? 'text-crit' : isNearLimit ? 'text-warn' : 'text-muted-dim'}`}
             aria-live="polite"
             aria-label={`${len} of ${MAX_LEN} characters`}
@@ -127,8 +127,7 @@ export function PayloadInputBox({ payload, onChange, error, onClear, isAnalyzing
 
         <div
           className={`rounded-lg border overflow-hidden transition-colors duration-150
-            ${error ? 'border-crit/60' : isAnalyzing ? 'border-muted-dim/60' : 'border-border-soc hover:border-muted-dim/60'}
-            ${focused ? 'ring-1 ring-muted-dim/60' : ''}`}
+            ${error ? 'border-crit/60' : focused ? 'border-accent/60 ring-1 ring-accent/40' : isAnalyzing ? 'border-muted-dim/60' : 'border-border-soc hover:border-muted-dim/60'}`}
         >
           {/* ── Title bar ── */}
           <div className="flex items-center justify-between px-3 py-1.5 bg-[#0B0D11] border-b border-border-soc">
@@ -137,7 +136,7 @@ export function PayloadInputBox({ payload, onChange, error, onClear, isAnalyzing
               {['bg-[#3A3A3A]', 'bg-[#3A3A3A]', 'bg-[#3A3A3A]'].map((c, i) => (
                 <span key={i} aria-hidden="true" className={`w-2.5 h-2.5 rounded-full ${c}`} />
               ))}
-              <span className="ml-2 font-mono text-[11px] text-muted-dim tracking-widest">
+              <span className="ml-2 font-mono text-xs text-muted-dim tracking-widest">
                 payload.txt
               </span>
             </div>
@@ -154,7 +153,7 @@ export function PayloadInputBox({ payload, onChange, error, onClear, isAnalyzing
               style={{ fontFamily: 'inherit', fontSize: '13px', lineHeight: '1.625rem' }}
             >
               {lineNumbers.map((n) => (
-                <div key={n} className="font-mono text-[11px] text-muted-dim/50 leading-[1.625rem]">
+                <div key={n} className="font-mono text-xs text-muted-dim/50 leading-[1.625rem]">
                   {n}
                 </div>
               ))}
@@ -174,11 +173,10 @@ export function PayloadInputBox({ payload, onChange, error, onClear, isAnalyzing
             {showPrompt && (
               <div
                 aria-hidden="true"
-                className="absolute left-12 top-3 font-mono text-[13px] text-muted-dim/50 pointer-events-none select-none leading-[1.625rem] flex items-start gap-1"
+                className="absolute inset-y-0 left-10 right-0 flex flex-col items-center justify-center gap-2 text-center font-mono text-[13px] text-muted-dim/70 pointer-events-none select-none"
               >
-                <span className="text-crit/60">{'>'}</span>
-                <span>Paste a message to analyze</span>
-                <span className="inline-block w-[7px] h-[14px] bg-muted-dim/40 animate-[blink_1s_step-end_infinite] motion-reduce:animate-none self-start mt-[5px]" />
+                <ShieldAlert size={34} className="text-ink opacity-10" aria-hidden="true" />
+                <span>Paste a message or load a sample below</span>
               </div>
             )}
 
@@ -196,8 +194,8 @@ export function PayloadInputBox({ payload, onChange, error, onClear, isAnalyzing
               autoCapitalize="off"
               aria-invalid={error ? 'true' : 'false'}
               aria-describedby={error ? 'payload-error' : 'payload-readout'}
-              className="flex-1 min-h-[200px] resize-y bg-transparent px-3 py-3
-                font-mono text-[13px] text-ink leading-[1.625rem]
+              className="flex-1 min-h-[220px] resize-y bg-transparent px-3 py-3
+                font-mono text-[15px] text-ink/90 leading-[1.625rem]
                 placeholder:text-transparent outline-none border-none
                 min-w-0"
               style={{ tabSize: 2 }}
@@ -246,8 +244,6 @@ export function PayloadInputBox({ payload, onChange, error, onClear, isAnalyzing
         ))}
       </div>
 
-      {/* Blink keyframe */}
-      <style>{`@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }`}</style>
     </div>
   );
 }

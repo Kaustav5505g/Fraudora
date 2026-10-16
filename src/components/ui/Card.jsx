@@ -13,7 +13,7 @@ export function Card({ className = '', children, glow }) {
   const glowClass = glow ? glowMap[glow] : '';
   return (
     <div
-      className={`bg-surface border border-border-soc rounded-lg ${glowClass} ${className}`}
+      className={`stagger-fade-in motion-reduce:animate-none bg-gradient-to-b from-[#1E222B] to-[#171A21] border border-[#2F3441] rounded-lg shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05),0_8px_24px_-12px_rgba(0,0,0,0.6)] hover:border-[#3B4150] transition ${glowClass} ${className}`}
     >
       {children}
     </div>

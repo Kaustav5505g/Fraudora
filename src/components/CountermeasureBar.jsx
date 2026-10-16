@@ -57,7 +57,7 @@ export function CountermeasureBar({ onAction, onToast }) {
       handler: handleQuarantine,
       style: applied.quarantine
         ? 'border-crit/30 bg-crit/10 text-crit/60 cursor-not-allowed'
-        : 'border-crit/40 bg-crit/10 text-crit hover:bg-crit/20 hover:border-crit/60',
+        : 'border-crit bg-crit text-white hover:bg-red-500',
     },
     {
       id: 'block',
@@ -66,7 +66,7 @@ export function CountermeasureBar({ onAction, onToast }) {
       handler: handleBlock,
       style: applied.block
         ? 'border-crit/30 bg-crit/10 text-crit/60 cursor-not-allowed'
-        : 'border-crit/40 bg-surface text-crit hover:bg-crit/10 hover:border-crit/60',
+        : 'border-crit text-crit hover:bg-crit/10',
     },
     {
       id: 'markSafe',
@@ -77,7 +77,7 @@ export function CountermeasureBar({ onAction, onToast }) {
         ? 'border-safe/30 bg-safe/10 text-safe/60 cursor-not-allowed'
         : confirmPending
         ? 'border-safe/60 bg-safe/20 text-safe animate-pulse motion-reduce:animate-none'
-        : 'border-safe/40 bg-surface text-safe hover:bg-safe/10 hover:border-safe/60',
+        : 'border-safe/50 bg-transparent text-safe hover:bg-safe/10',
     },
     {
       id: 'escalate',
@@ -86,16 +86,21 @@ export function CountermeasureBar({ onAction, onToast }) {
       handler: handleEscalate,
       style: applied.escalate
         ? 'border-warn/30 bg-warn/10 text-warn/60 cursor-not-allowed'
-        : 'border-warn/40 bg-surface text-warn hover:bg-warn/10 hover:border-warn/60',
+        : 'border-warn bg-warn text-obsidian hover:bg-amber-300',
     },
   ];
 
   return (
-    <Card className="p-4 sm:p-5 space-y-4">
+    <Card className="sticky bottom-0 z-30 bg-obsidian/95 p-4 shadow-[0_-10px_30px_-18px_rgba(0,0,0,0.9)] backdrop-blur-md sm:static sm:bg-transparent sm:shadow-none sm:backdrop-blur-none sm:p-5 space-y-4">
       {/* Header */}
-      <h2 className="text-[11px] font-mono uppercase tracking-widest text-muted-dim">
-        COUNTERMEASURES
-      </h2>
+      <div className="flex items-center gap-2 border-b border-border-soc pb-3 mb-4">
+        <span className="flex h-7 w-7 items-center justify-center rounded-md bg-warn/15 text-warn">
+          <Siren size={15} aria-hidden="true" />
+        </span>
+        <h2 className="text-xs font-mono uppercase tracking-widest text-ink/80">
+          COUNTERMEASURES
+        </h2>
+      </div>
 
       {/* Action grid */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -107,10 +112,10 @@ export function CountermeasureBar({ onAction, onToast }) {
             disabled={!!applied[id]}
             aria-disabled={!!applied[id]}
             aria-label={label}
-            className={`flex flex-col items-center justify-center gap-2 px-3 py-3 rounded-lg border
-              font-mono text-[11px] tracking-widest font-medium min-h-[64px]
+            className={`flex h-12 flex-col items-center justify-center gap-1 rounded-lg border
+              px-2 font-mono text-xs tracking-widest font-medium
               transition-all duration-150
-              focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink
+              focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent
               ${style}`}
           >
             <Icon size={16} />

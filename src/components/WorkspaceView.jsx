@@ -3,6 +3,7 @@ import { HeroHeader } from './HeroHeader';
 import { PayloadInputBox } from './PayloadInputBox';
 import { QuickTestChips } from './QuickTestChips';
 import { ScanButton } from './ScanButton';
+import { ThreatPulse } from './ThreatPulse';
 import { EngineStatusPanel } from './EngineStatusPanel';
 import { RecentScans } from './RecentScans';
 
@@ -64,7 +65,7 @@ export function WorkspaceView({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
 
           {/* ── LEFT COLUMN (col-span-7) ── */}
-          <section className="lg:col-span-7 space-y-6" aria-label="Message input">
+          <section className="lg:col-span-7 space-y-6 stagger-children" aria-label="Message input">
             <HeroHeader />
             <PayloadInputBox
               payload={payload}
@@ -82,7 +83,8 @@ export function WorkspaceView({
           </section>
 
           {/* ── RIGHT COLUMN (col-span-5) ── */}
-          <aside className="lg:col-span-5 space-y-4" aria-label="Engine status and recent scans">
+          <aside className="lg:col-span-5 space-y-4 lg:sticky lg:top-24 stagger-children" aria-label="Engine status and recent scans">
+            <ThreatPulse />
             <EngineStatusPanel />
             <RecentScans onOpenForensic={onShowForensic} />
           </aside>

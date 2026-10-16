@@ -49,6 +49,37 @@ export const RISK_LEVELS = {
   },
 };
 
+export const ATTACK_ANATOMY = [
+  {
+    step: '01',
+    title: 'IMPERSONATE',
+    description: 'Pretends to be NatWest',
+    icon: 'Landmark',
+    severity: 'critical',
+  },
+  {
+    step: '02',
+    title: 'PANIC',
+    description: 'Claims account is suspended',
+    icon: 'AlertTriangle',
+    severity: 'critical',
+  },
+  {
+    step: '03',
+    title: 'URGENCY',
+    description: 'Demands action immediately',
+    icon: 'Timer',
+    severity: 'suspicious',
+  },
+  {
+    step: '04',
+    title: 'TRAP',
+    description: 'Fake link harvests login',
+    icon: 'Link2',
+    severity: 'critical',
+  },
+];
+
 /** Quick-test sample payloads — 5 entries covering the full traffic-light range */
 export const SAMPLES = [
   {

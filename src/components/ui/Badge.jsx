@@ -7,7 +7,7 @@ import React from 'react';
 export function Badge({ children, className = '' }) {
   return (
     <span
-      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-mono font-medium uppercase tracking-widest ${className}`}
+      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono font-medium uppercase tracking-widest ${className}`}
     >
       {children}
     </span>
