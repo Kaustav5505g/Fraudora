@@ -85,7 +85,7 @@ export function PayloadForensicView({ payload, highlightTerms }) {
   const segments = useMemo(() => parseSegments(payload), [payload]);
 
   return (
-    <Card className="p-4 sm:p-5 space-y-4">
+    <Card className="p-4 space-y-3">
       {/* Header with legend */}
       <div className="flex items-center justify-between flex-wrap gap-2 border-b border-border-soc pb-3 mb-4">
         <div className="flex items-center gap-2">
