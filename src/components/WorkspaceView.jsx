@@ -1,8 +1,7 @@
-import React, { useEffect, useCallback } from 'react';
+import React from 'react';
 import { HeroHeader } from './HeroHeader';
-import { PayloadInputBox } from './PayloadInputBox';
+import { PillSearch } from './PillSearch';
 import { QuickTestChips } from './QuickTestChips';
-import { ScanButton } from './ScanButton';
 
 export function WorkspaceView({
   payload,
@@ -11,22 +10,10 @@ export function WorkspaceView({
   isAnalyzing,
   activeSampleId,
   onSampleSelect,
-  onClear,
   onScan,
   onShowForensic,
 }) {
   void onShowForensic;
-  const handleKeyDown = useCallback((event) => {
-    if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
-      event.preventDefault();
-      onScan();
-    }
-  }, [onScan]);
-
-  useEffect(() => {
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [handleKeyDown]);
 
   return (
     <main
@@ -36,19 +23,14 @@ export function WorkspaceView({
     >
       <div className="space-y-5">
         <HeroHeader />
-        <PayloadInputBox
-          payload={payload}
+        <PillSearch
+          value={payload}
           onChange={onPayloadChange}
-          error={error}
-          onClear={onClear}
+          onSubmit={onScan}
           isAnalyzing={isAnalyzing}
+          error={error}
         />
         <QuickTestChips activeSampleId={activeSampleId} onSelect={onSampleSelect} />
-        <ScanButton
-          isAnalyzing={isAnalyzing}
-          isDisabled={!payload.trim()}
-          onScan={onScan}
-        />
       </div>
     </main>
   );
