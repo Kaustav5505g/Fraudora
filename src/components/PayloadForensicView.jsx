@@ -19,22 +19,21 @@ export function highlightPayload(text, terms) {
   const regex = new RegExp(`(${escaped.join('|')})`, 'gi');
 
   const parts = text.split(regex);
-  return parts.map((part, i) => {
-    if (regex.test(part)) {
-      // Reset lastIndex after test
-      regex.lastIndex = 0;
-      return (
-        <mark
-          key={i}
-          className="bg-crit/20 text-red-200 border-b border-crit/60 rounded-sm px-0.5 not-italic"
-        >
-          {part}
-        </mark>
-      );
-    }
-    regex.lastIndex = 0;
-    return part;
-  });
+  // After split with a capture group regex, even-indexed parts are text, odd-indexed are matches.
+  // We verify with a fresh non-global regex to avoid lastIndex drift.
+  const matchRegex = new RegExp(`^(?:${escaped.join('|')})$`, 'i');
+  return parts.map((part, i) =>
+    matchRegex.test(part) ? (
+      <mark
+        key={i}
+        className="bg-crit/20 text-red-200 border-b border-crit/60 rounded-sm px-0.5 not-italic"
+      >
+        {part}
+      </mark>
+    ) : (
+      part
+    )
+  );
 }
 
 /**

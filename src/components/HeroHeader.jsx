@@ -1,36 +1,35 @@
 import React from 'react';
 
 /**
- * HeroHeader — workspace landing copy.
+ * HeroHeader — left-aligned workspace landing copy.
  * Pure presentational; no props required.
  */
 export function HeroHeader() {
   return (
-    <div className="text-center space-y-4 animate-fade-in">
-      {/* Eyebrow */}
+    <div className="space-y-4 animate-fade-in text-left">
+      {/* Mono eyebrow with prompt prefix */}
       <p className="text-[11px] font-mono uppercase tracking-widest text-muted-dim">
-        THREAT TRIAGE // INSTANT ANALYSIS
+        <span className="text-crit/70 mr-1 select-none">{'>'}</span>
+        THREAT_TRIAGE // INSTANT_ANALYSIS
       </p>
 
-      {/* H1 */}
+      {/* H1 — left-aligned, reduced size */}
       <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-ink leading-tight">
         Stop scams{' '}
-        <span className="relative inline-block">
+        {/*
+         * "before users act." is wrapped in a forensic-highlight style block
+         * matching the PayloadForensicView mark style — same visual language.
+         */}
+        <span className="inline bg-crit/15 text-red-200 px-2 rounded-sm whitespace-nowrap">
           before users act.
-          {/* Crit-tinted underline accent — decorative, not semantic */}
-          <span
-            aria-hidden="true"
-            className="absolute inset-x-0 bottom-0 h-[3px] rounded-full bg-crit/40"
-          />
         </span>
       </h1>
 
-      {/* Subtitle */}
-      <p className="max-w-xl mx-auto text-base text-muted leading-relaxed">
-        Fraudora instantly analyzes any SMS or messaging payload, flags the
-        manipulation tactics, inspects embedded links, and tells you{' '}
-        <em className="not-italic text-ink">exactly why it&apos;s dangerous</em> — in
-        plain English.
+      {/* Subtitle — one sentence, left-aligned */}
+      <p className="max-w-xl text-base text-muted leading-relaxed">
+        Paste any SMS or message payload to instantly surface hidden manipulation
+        tactics, inspect embedded links, and understand{' '}
+        <span className="text-ink">exactly why it&apos;s dangerous</span>.
       </p>
     </div>
   );

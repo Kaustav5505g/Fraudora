@@ -159,6 +159,7 @@ export default function App() {
           onSampleSelect={handleSampleSelect}
           onClear={handleClear}
           onScan={handleScan}
+          onShowForensic={() => handleViewChange('forensic')}
         />
       )}
 

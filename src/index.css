@@ -15,32 +15,60 @@ body {
   color: #F0F2F5;
   font-family: 'Inter', system-ui, sans-serif;
   min-height: 100vh;
-  /* Faint grid texture at ~3% opacity — must not hurt legibility */
+
+  /*
+   * Grid texture at 6-7% opacity — visible at the top, fades with vignette.
+   * Layer order (bottom-to-top): vignette → grid.
+   */
   background-image:
-    linear-gradient(rgba(42, 46, 57, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(42, 46, 57, 0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
+    /* Radial vignette: opaque obsidian at edges, transparent at top-center */
+    radial-gradient(ellipse at top, transparent 0%, #0F1115 70%),
+    /* Horizontal grid lines */
+    linear-gradient(rgba(42, 46, 57, 0.065) 1px, transparent 1px),
+    /* Vertical grid lines */
+    linear-gradient(90deg, rgba(42, 46, 57, 0.065) 1px, transparent 1px);
+  background-size: auto, 40px 40px, 40px 40px;
 }
 
-/* Respect reduced-motion for texture */
+/* Respect reduced-motion globally */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
-/* ─── Custom dark scrollbars (scrollbar-color / scrollbar-width — Baseline) */
+/* ─── Custom dark scrollbars (CSS Scrollbars spec — Baseline widely available) */
 * {
-  scrollbar-color: #2A2E39 #0F1115;
+  scrollbar-color: #2A2E39 transparent;
   scrollbar-width: thin;
 }
-
-/* Webkit fallback for older Safari */
+/* Webkit fallback for Safari */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: #0F1115; }
+::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #2A2E39; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #525866; }
 
-/* ─── Utility for mark highlights inside payload forensics ─────── */
-mark {
-  background: transparent; /* Reset browser default; components apply their own */
-  color: inherit;
+/* ─── Terminal textarea: blinking block caret on placeholder ────── */
+/*
+ * We can't animate ::placeholder directly, so the blinking caret effect
+ * is handled in React (BlinkingPrompt overlay component in PayloadInputBox).
+ */
+
+/* mark reset — PayloadForensicView applies its own bg */
+mark { background: transparent; color: inherit; }
+
+/* ─── Sweep animation — used by PayloadInputBox while analyzing ─── */
+@keyframes sweep {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.sweep-animate {
+  animation: sweep 1.2s linear infinite;
+}
+
+/* ─── Status bar / engine strip fixed positioning helpers ────────── */
+.has-status-bar {
+  padding-bottom: 28px;
 }

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ShieldAlert, Loader2 } from 'lucide-react';
 
-/** Cycling status lines shown while analyzing */
 const STATUS_LINES = [
   '> parsing payload...',
   '> evaluating Layer 1 rules...',
@@ -10,61 +9,76 @@ const STATUS_LINES = [
 ];
 
 /**
- * ScanButton — primary CTA with loading state, status cycling, and indeterminate bar.
- * @param {{ isAnalyzing: boolean, onScan: () => void }} props
+ * ScanButton — full-width primary CTA with Ctrl/Cmd+Enter hint.
+ * Disabled when payload is empty (not just during analyzing).
+ *
+ * @param {{
+ *   isAnalyzing: boolean,
+ *   isDisabled: boolean,   // true when payload is empty
+ *   onScan: () => void,
+ * }} props
  */
-export function ScanButton({ isAnalyzing, onScan }) {
+export function ScanButton({ isAnalyzing, isDisabled, onScan }) {
   const [statusIdx, setStatusIdx] = useState(0);
 
-  // Cycle status lines every 450 ms while analyzing
   useEffect(() => {
     if (!isAnalyzing) { setStatusIdx(0); return; }
-    const id = setInterval(() => {
-      setStatusIdx((i) => (i + 1) % STATUS_LINES.length);
-    }, 450);
+    const id = setInterval(() => setStatusIdx((i) => (i + 1) % STATUS_LINES.length), 450);
     return () => clearInterval(id);
   }, [isAnalyzing]);
 
+  const effectivelyDisabled = isDisabled || isAnalyzing;
+
   return (
     <div className="space-y-2">
-      {/* ── Main button ── */}
+      {/* ── Full-width button with kbd hint ── */}
       <button
         type="button"
         onClick={onScan}
-        disabled={isAnalyzing}
+        disabled={effectivelyDisabled}
         aria-busy={isAnalyzing}
         aria-label={isAnalyzing ? 'Analyzing message, please wait' : 'Run scan and triage'}
-        className={`w-full sm:w-auto flex items-center justify-center gap-2
-          px-8 py-3 rounded-lg font-mono font-bold text-[13px] tracking-widest
+        className={`w-full flex items-center justify-between gap-3
+          px-5 py-3 rounded-lg font-mono font-bold text-[13px] tracking-widest
           min-h-[48px] transition-all duration-150
           focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink
-          ${isAnalyzing
-            ? 'bg-ink/60 text-obsidian cursor-not-allowed'
-            : 'bg-ink text-obsidian hover:bg-white active:scale-[0.98]'
+          ${effectivelyDisabled
+            ? 'bg-ink/40 text-obsidian/60 cursor-not-allowed opacity-40'
+            : 'bg-ink text-obsidian hover:bg-white active:scale-[0.99]'
           }`}
       >
-        {isAnalyzing ? (
-          <>
+        {/* Left: icon + label */}
+        <span className="flex items-center gap-2">
+          {isAnalyzing ? (
             <Loader2 size={16} className="animate-spin motion-reduce:animate-none" />
-            ANALYZING...
-          </>
-        ) : (
-          <>
+          ) : (
             <ShieldAlert size={16} />
-            RUN SCAN &amp; TRIAGE
-          </>
+          )}
+          {isAnalyzing ? 'ANALYZING...' : 'RUN SCAN & TRIAGE'}
+        </span>
+
+        {/* Right: keyboard hint */}
+        {!isAnalyzing && (
+          <span className="flex items-center gap-1 opacity-60 shrink-0">
+            <kbd className="inline-flex items-center px-1.5 py-0.5 rounded border border-obsidian/20 bg-obsidian/15 font-mono text-[10px] font-normal">
+              Ctrl
+            </kbd>
+            <span className="font-mono text-[10px] font-normal">+</span>
+            <kbd className="inline-flex items-center px-1.5 py-0.5 rounded border border-obsidian/20 bg-obsidian/15 font-mono text-[10px] font-normal">
+              Enter
+            </kbd>
+          </span>
         )}
       </button>
 
-      {/* ── Loading state: indeterminate bar + cycling status ── */}
+      {/* ── Loading: cycling status log ── */}
       {isAnalyzing && (
-        <div className="space-y-2 animate-fade-in" aria-live="polite">
-          {/* Indeterminate progress bar */}
+        <div className="rounded-md border border-border-soc bg-[#0B0D11] px-3 py-2 space-y-1.5 animate-fade-in" aria-live="polite">
+          {/* Indeterminate bar */}
           <div className="w-full h-[2px] bg-border-soc rounded-full overflow-hidden">
             <div className="h-full bg-crit/70 rounded-full animate-[progress_1.4s_ease-in-out_infinite]" />
           </div>
-          {/* Cycling status line */}
-          <p className="font-mono text-[11px] text-muted-dim tracking-widest transition-opacity duration-300">
+          <p className="font-mono text-[11px] text-muted-dim tracking-widest">
             {STATUS_LINES[statusIdx]}
           </p>
         </div>
