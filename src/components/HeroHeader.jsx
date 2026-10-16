@@ -7,9 +7,6 @@ export function HeroHeader() {
       <h1 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl">
         Got a suspicious message?
       </h1>
-      <p className="mx-auto max-w-xl text-base leading-7 text-secondary">
-        Paste it here. We&apos;ll tell you if it&apos;s a scam, and show you exactly how it tries to trick you.
-      </p>
       <p className="inline-flex items-center gap-1.5 text-sm font-medium text-secondary">
         <LockKeyhole size={15} aria-hidden="true" />
         We don&apos;t store your messages.

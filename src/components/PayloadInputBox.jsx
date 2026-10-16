@@ -9,9 +9,6 @@ export function PayloadInputBox({ payload, onChange, error, onClear, isAnalyzing
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <label htmlFor="payload-input" className="text-sm font-medium text-secondary">
-          Your message
-        </label>
         <div className="flex items-center gap-3">
           {length > 0 && (
             <button
@@ -34,6 +31,7 @@ export function PayloadInputBox({ payload, onChange, error, onClear, isAnalyzing
       </div>
       <textarea
         id="payload-input"
+        aria-label="Your message"
         value={payload}
         onChange={(event) => onChange(event.target.value)}
         maxLength={MAX_LEN}
