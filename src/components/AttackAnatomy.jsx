@@ -7,7 +7,7 @@ const ICONS = { Landmark, AlertTriangle, Timer, Link2 };
 
 export function AttackAnatomy() {
   return (
-    <Card className="p-4 sm:p-5">
+    <Card className="p-4">
       <div className="flex items-center gap-2 border-b border-border-soc pb-3 mb-4">
         <span className="flex h-7 w-7 items-center justify-center rounded-md bg-risk-soft text-risk">
           <AlertTriangle size={15} aria-hidden="true" />

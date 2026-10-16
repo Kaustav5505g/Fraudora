@@ -91,7 +91,7 @@ export function CountermeasureBar({ onAction, onToast }) {
   ];
 
   return (
-    <Card className="sticky bottom-0 z-30 bg-obsidian/95 p-4 shadow-[0_-10px_30px_-18px_rgba(0,0,0,0.9)] backdrop-blur-md sm:static sm:bg-transparent sm:shadow-none sm:backdrop-blur-none sm:p-5 space-y-4">
+    <Card className="sticky bottom-0 z-30 bg-obsidian/95 p-4 shadow-[0_-10px_30px_-18px_rgba(0,0,0,0.9)] backdrop-blur-md sm:static sm:bg-transparent sm:shadow-none sm:backdrop-blur-none space-y-3">
       {/* Header */}
       <div className="flex items-center gap-2 border-b border-border-soc pb-3 mb-4">
         <span className="flex h-7 w-7 items-center justify-center rounded-md bg-warn/15 text-warn">
