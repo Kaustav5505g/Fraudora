@@ -1,8 +1,14 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { RotateCcw, ShieldAlert, Copy, Check } from 'lucide-react';
 import { Card } from './ui/Card';
 import { Badge } from './ui/Badge';
 import { RISK_LEVELS, SHOW_DEMO_STATS } from '../data/mockData';
+
+const GLOW = {
+  critical: 'bg-[#ef4444] shadow-[0_0_15px_rgba(239,68,68,0.25)] animate-pulse motion-reduce:animate-none',
+  suspicious: 'bg-[#f59e0b] shadow-[0_0_15px_rgba(245,158,11,0.25)]',
+  safe: 'bg-[#10b981] shadow-[0_0_15px_rgba(16,185,129,0.25)]',
+};
 
 /**
  * TriageBanner — full-width risk summary: score, message ID, status, new-scan.
@@ -14,24 +20,7 @@ import { RISK_LEVELS, SHOW_DEMO_STATS } from '../data/mockData';
  */
 export function TriageBanner({ result, status, onNewScan }) {
   const [copied, setCopied] = useState(false);
-  const [ringProgress, setRingProgress] = useState(0);
   const risk = RISK_LEVELS[result.riskLevel] || RISK_LEVELS.suspicious;
-
-  useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      const frameId = requestAnimationFrame(() => setRingProgress(1));
-      return () => cancelAnimationFrame(frameId);
-    }
-    let frameId;
-    const startedAt = performance.now();
-    const animate = (now) => {
-      const progress = Math.min((now - startedAt) / 900, 1);
-      setRingProgress(progress);
-      if (progress < 1) frameId = requestAnimationFrame(animate);
-    };
-    frameId = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(frameId);
-  }, [result.score]);
 
   const copyId = useCallback(() => {
     navigator.clipboard.writeText(result.messageId).then(() => {
@@ -40,8 +29,6 @@ export function TriageBanner({ result, status, onNewScan }) {
     });
   }, [result.messageId]);
 
-  const circumference = 2 * Math.PI * 48;
-  const displayedScore = Math.round(result.score * ringProgress);
   const statChips = [
     { label: 'RULES', value: SHOW_DEMO_STATS ? `${result.indicators.length}/42` : String(result.indicators.length) },
     { label: 'LINKS', value: String((result.payload.match(/https?:\/\//g) || []).length) },
@@ -54,39 +41,18 @@ export function TriageBanner({ result, status, onNewScan }) {
 
   return (
     <Card
-      className="risk-banner border-risk overflow-hidden animate-triage-glow motion-reduce:animate-none"
+      className={`risk-banner border-risk overflow-hidden animate-triage-glow motion-reduce:animate-none ${
+        result.riskLevel === 'critical' ? 'border-[#ef4444]/50' : ''
+      }`}
     >
       <div className="flex flex-col gap-3 p-4 xl:flex-row xl:items-center">
         <div className="flex min-w-0 flex-1 items-center gap-4">
-          <div
-            className="relative h-[120px] w-[120px] shrink-0"
-            role="progressbar"
-            aria-valuenow={displayedScore}
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-label={`Confidence score ${displayedScore} out of 100`}
-          >
-            <svg viewBox="0 0 120 120" className="h-full w-full -rotate-90 overflow-visible">
-              <circle cx="60" cy="60" r="48" fill="none" stroke="#2F3441" strokeWidth="6" />
-              <circle
-                cx="60"
-                cy="60"
-                r="48"
-                fill="none"
-                stroke={risk.color}
-                strokeWidth="6"
-                strokeLinecap="round"
-                strokeDasharray={circumference}
-                strokeDashoffset={circumference * (1 - (result.score / 100) * ringProgress)}
-                style={{ filter: `drop-shadow(0 0 10px ${risk.color})` }}
-              />
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className={`font-mono text-5xl font-bold leading-none ${risk.colorClass}`}>
-                {displayedScore}
-              </span>
-              <span className="mt-1 font-mono text-xs text-muted-dim">/100</span>
-            </div>
+          <div className={`inline-flex items-center gap-3 rounded-full px-5 py-2 font-bold text-white ${GLOW[result.riskLevel] || GLOW.suspicious}`}>
+            <span className="font-mono text-2xl tabular-nums">{result.score}</span>
+            <span className="text-xs opacity-80">/100</span>
+            <span className="text-sm tracking-wide">
+              {result.riskLevel === 'critical' ? 'HIGH RISK' : result.riskLevel === 'suspicious' ? 'SUSPICIOUS' : 'LOW RISK'}
+            </span>
           </div>
 
           <div className="flex min-w-0 flex-1 flex-col gap-3">
