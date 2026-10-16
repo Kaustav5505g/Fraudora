@@ -6,20 +6,19 @@
   box-sizing: border-box;
 }
 
+html, body, #root {
+  min-height: 100%;
+  background: #0b0f19;
+  color: #f9fafb;
+}
+
 html {
   color-scheme: light;
   scroll-behavior: smooth;
 }
 
 body {
-  min-height: 100vh;
-  background: #F6F7FB;
-  color: #0F172A;
   font-family: 'Plus Jakarta Sans', Inter, system-ui, sans-serif;
-}
-
-#root {
-  min-height: 100vh;
 }
 
 @keyframes fadeSlideIn {
