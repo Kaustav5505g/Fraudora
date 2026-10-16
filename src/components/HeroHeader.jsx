@@ -1,36 +1,19 @@
 import React from 'react';
+import { LockKeyhole } from 'lucide-react';
 
-/**
- * HeroHeader — left-aligned workspace landing copy.
- * Pure presentational; no props required.
- */
 export function HeroHeader() {
   return (
-    <div className="space-y-4 animate-fade-in text-left">
-      {/* Mono eyebrow with prompt prefix */}
-      <p className="text-xs font-mono uppercase tracking-widest text-muted-dim">
-        <span className="text-crit/70 mr-1 select-none">{'>'}</span>
-        THREAT_TRIAGE // INSTANT_ANALYSIS
-      </p>
-
-      {/* H1 — left-aligned, reduced size */}
-      <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-ink leading-tight">
-        Stop scams{' '}
-        {/*
-         * "before users act." is wrapped in a forensic-highlight style block
-         * matching the PayloadForensicView mark style — same visual language.
-         */}
-        <span className="relative z-0 inline bg-crit/15 text-red-200 px-2 rounded-sm whitespace-nowrap before:absolute before:inset-0 before:-z-10 before:rounded-full before:bg-crit/20 before:blur-3xl before:content-['']">
-          before users act.
-        </span>
+    <section className="space-y-3 text-center">
+      <h1 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl">
+        Got a suspicious message?
       </h1>
-
-      {/* Subtitle — one sentence, left-aligned */}
-      <p className="max-w-xl text-[15px] text-ink/90 leading-relaxed">
-        Paste any SMS or message payload to instantly surface hidden manipulation
-        tactics, inspect embedded links, and understand{' '}
-        <span className="text-ink">exactly why it&apos;s dangerous</span>.
+      <p className="mx-auto max-w-xl text-base leading-7 text-secondary">
+        Paste it here. We&apos;ll tell you if it&apos;s a scam, and show you exactly how it tries to trick you.
       </p>
-    </div>
+      <p className="inline-flex items-center gap-1.5 text-sm font-medium text-secondary">
+        <LockKeyhole size={15} aria-hidden="true" />
+        We don&apos;t store your messages.
+      </p>
+    </section>
   );
 }

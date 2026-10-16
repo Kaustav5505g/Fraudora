@@ -1,119 +1,87 @@
-import React from 'react';
-import { LayoutDashboard, ScanSearch } from 'lucide-react';
-import { useUtcClock } from '../hooks/useUtcClock';
-import { SHOW_DEMO_STATS } from '../data/mockData';
+import React, { useEffect, useState } from 'react';
+import { ShieldCheck, X } from 'lucide-react';
 
-/**
- * SOCHeader — sticky global header with status strip.
- * @param {{ activeView: 'workspace' | 'forensic', onViewChange: (view: string) => void }} props
- */
 export function SOCHeader({ activeView, onViewChange }) {
-  const clock = useUtcClock();
+  const [isHowItWorksOpen, setIsHowItWorksOpen] = useState(false);
+  void activeView;
+  void onViewChange;
+
+  useEffect(() => {
+    if (!isHowItWorksOpen) return undefined;
+    function handleEscape(event) {
+      if (event.key === 'Escape') setIsHowItWorksOpen(false);
+    }
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [isHowItWorksOpen]);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border-soc bg-obsidian/90 backdrop-blur-sm" role="banner">
-      <div className="mx-auto max-w-[1600px] px-4 sm:px-6">
-
-        {/* ── Main row ── */}
-        <div className="flex h-14 items-center justify-between gap-4">
-          {/* Left: status dot + title */}
-          <div className="flex items-center gap-3 min-w-0">
-            <span className="relative flex h-2.5 w-2.5 shrink-0 motion-reduce:animate-none">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-crit opacity-60 motion-reduce:hidden" />
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-crit animate-pulse motion-reduce:animate-none" />
+    <>
+      <header className="h-16 shrink-0 border-b border-slate-200 bg-white">
+        <div className="mx-auto flex h-full max-w-6xl items-center justify-between px-4 sm:px-6">
+          <a href="/" className="flex min-h-11 items-center gap-3 rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent" aria-label="Fraudora home">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent text-white">
+              <ShieldCheck size={23} aria-hidden="true" />
             </span>
-            <span className="hidden sm:block font-mono font-bold text-[13px] tracking-widest text-ink truncate">
-              FRAUDORA // SENTINEL SMS SECURITY OPERATIONS
+            <span className="flex items-baseline gap-2">
+              <span className="text-xl font-bold text-ink">Fraudora</span>
+              <span className="hidden text-sm text-muted sm:inline">Scam checker</span>
             </span>
-            <span className="block sm:hidden font-mono font-bold text-[13px] tracking-widest text-ink">
-              FRAUDORA // SENTINEL
-            </span>
-          </div>
-
-          {/* Center metadata — desktop only; labels dim, values bright */}
-          <div className="hidden md:flex items-center font-mono text-xs tracking-widest whitespace-nowrap divide-x divide-border-soc">
-            <div className="flex items-center gap-1.5 px-4 first:pl-0">
-              <span className="text-muted-dim">ENGINE:</span>
-              <span className="text-ink">HYBRID-v3.2</span>
-            </div>
-            <div className="flex items-center gap-1.5 px-4">
-              <span className="text-muted-dim">UTC</span>
-              <span className="text-ink tabular-nums">{clock.replace('UTC ', '')}</span>
-            </div>
-          </div>
-
-          {/* Right: view toggle */}
-          <ViewToggle activeView={activeView} onViewChange={onViewChange} />
-        </div>
-
-        {/* ── Mobile second row: metadata ── */}
-        <div className="flex md:hidden items-center gap-3 pb-2 font-mono text-xs tracking-widest divide-x divide-border-soc">
-          <div className="flex items-center gap-1 pr-3">
-            <span className="text-muted-dim">ENGINE:</span>
-            <span className="text-ink">HYBRID-v3.2</span>
-          </div>
-          <div className="flex items-center gap-1 pl-3">
-            <span className="text-muted-dim">UTC</span>
-            <span className="text-ink tabular-nums">{clock.replace('UTC ', '')}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* ── Global status strip (28px) ── */}
-      <div className="border-t border-border-soc bg-obsidian">
-        <div className="mx-auto max-w-[1600px] px-4 sm:px-6 h-7 flex items-center gap-0 overflow-x-auto">
-          {[
-            ...(SHOW_DEMO_STATS ? [['RULES', '42']] : []),
-            ['LAYER-1', 'ONLINE'],
-            ['LAYER-2', 'ONLINE'],
-            ['QUEUE', '0'],
-          ].map(([label, value], i, arr) => (
-            <React.Fragment key={label}>
-              <span className="flex items-center gap-1.5 font-mono text-[10px] tracking-widest whitespace-nowrap">
-                <span className="text-muted-dim">{label}:</span>
-                <span className={value === 'ONLINE' ? 'text-safe' : 'text-ink'}>{value}</span>
-              </span>
-              {i < arr.length - 1 && (
-                <span className="mx-3 text-border-soc font-mono text-[10px] select-none">|</span>
-              )}
-            </React.Fragment>
-          ))}
-        </div>
-      </div>
-    </header>
-  );
-}
-
-/** Segmented toggle between Workspace and Forensic views */
-function ViewToggle({ activeView, onViewChange }) {
-  const views = [
-    { id: 'workspace', label: 'Workspace', shortLabel: 'WS', Icon: LayoutDashboard },
-    { id: 'forensic', label: 'Forensic View', shortLabel: 'FV', Icon: ScanSearch },
-  ];
-  return (
-    <div
-      role="group"
-      aria-label="Switch view"
-      className="flex items-center rounded-md border border-border-soc bg-obsidian p-0.5 gap-0.5 shrink-0"
-    >
-      {views.map(({ id, label, shortLabel, Icon }) => {
-        const isActive = activeView === id;
-        return (
+          </a>
           <button
-            key={id}
-            onClick={() => onViewChange(id)}
-            aria-pressed={isActive}
-            aria-label={label}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-mono font-medium tracking-widest transition-colors duration-150
-            min-h-[36px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent
-            ${isActive ? 'bg-accent text-obsidian' : 'text-muted-dim hover:text-accent'}`}
+            type="button"
+            onClick={() => setIsHowItWorksOpen(true)}
+            className="min-h-11 rounded-lg px-3 text-sm font-semibold text-accent transition-colors hover:text-accent-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
-            <Icon size={13} />
-            <span className="hidden sm:inline">{label}</span>
-            <span className="inline sm:hidden">{shortLabel}</span>
+            How it works
           </button>
-        );
-      })}
-    </div>
+        </div>
+      </header>
+
+      {isHowItWorksOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setIsHowItWorksOpen(false);
+          }}
+        >
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="how-it-works-title"
+            className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl animate-fade-in"
+          >
+            <div className="mb-5 flex items-center justify-between gap-4">
+              <h2 id="how-it-works-title" className="text-xl font-bold text-ink">How it works</h2>
+              <button
+                type="button"
+                onClick={() => setIsHowItWorksOpen(false)}
+                aria-label="Close"
+                className="flex h-11 w-11 items-center justify-center rounded-xl text-secondary hover:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <ol className="space-y-4">
+              {[
+                ['Paste', 'Add the text of a suspicious SMS or message.'],
+                ['We check', 'Fraudora looks for risky language and suspicious links.'],
+                ['You decide', 'Review the explanation and choose what to do next.'],
+              ].map(([title, description], index) => (
+                <li key={title} className="flex gap-3">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-sm font-bold text-accent">
+                    {index + 1}
+                  </span>
+                  <div>
+                    <h3 className="font-semibold text-ink">{title}</h3>
+                    <p className="text-sm leading-6 text-secondary">{description}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </section>
+        </div>
+      )}
+    </>
   );
 }
