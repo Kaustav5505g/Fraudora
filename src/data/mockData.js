@@ -44,6 +44,19 @@ export const RISK_LEVELS = {
     dotClass: 'bg-crit',
     badgeClass: 'bg-[#FEF2F2] text-crit border border-[#FECACA]',
   },
+  high_risk: {
+    label: 'HIGH RISK',
+    shortLabel: 'HIGH',
+    tint: '#FEF2F2',
+    border: '#FECACA',
+    strong: '#DC2626',
+    color: '#DC2626',
+    colorClass: 'text-crit',
+    bgClass: 'bg-[#FEF2F2]',
+    borderClass: 'border-[#FECACA]',
+    dotClass: 'bg-crit',
+    badgeClass: 'bg-[#FEF2F2] text-crit border border-[#FECACA]',
+  },
 };
 
 export const ATTACK_ANATOMY = [

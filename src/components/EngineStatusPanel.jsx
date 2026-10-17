@@ -1,70 +1,148 @@
-import React, { useMemo } from 'react';
-import { Activity } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Activity, RefreshCw, ShieldCheck, Database, Sparkles, Globe } from 'lucide-react';
 import { Card } from './ui/Card';
-import { SHOW_DEMO_STATS } from '../data/mockData';
+import { fetchHealth, fetchRules, getClientId } from '../services/api';
 
-/** Generates a random 8-character uppercase session ID once per mount */
-function genSessionId() {
-  return Math.random().toString(36).slice(2, 10).toUpperCase();
-}
-
-/** Single dot indicator: green = online, red = degraded */
+/** Single dot indicator: green = online, red = offline/degraded */
 function StatusDot({ online = true }) {
   return (
     <span
       aria-label={online ? 'Online' : 'Offline'}
-      className={`inline-block w-1.5 h-1.5 rounded-full shrink-0 ${online ? 'bg-safe animate-pulse shadow-[0_0_8px_#10B981]' : 'bg-crit'}`}
+      className={`inline-block w-2 h-2 rounded-full shrink-0 ${
+        online ? 'bg-emerald-400 animate-pulse shadow-[0_0_8px_#10B981]' : 'bg-red-400'
+      }`}
     />
   );
 }
 
 /**
- * EngineStatusPanel — right-column card showing Fraudora engine health.
- * All values are static mock; replace with a /api/status endpoint call.
+ * EngineStatusPanel — Displays real-time telemetry from FastAPI backend:
+ * - GET /health
+ * - GET /api/rules
  */
-export function EngineStatusPanel() {
-  // Stable per-mount session ID
-  const sessionId = useMemo(() => genSessionId(), []);
+export function EngineStatusPanel({ onOpenRules }) {
+  const [health, setHealth] = useState(null);
+  const [rules, setRules] = useState(null);
+  const [latency, setLatency] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  async function loadTelemetry() {
+    setIsLoading(true);
+    const start = performance.now();
+    try {
+      const [h, r] = await Promise.all([
+        fetchHealth(),
+        fetchRules().catch(() => null),
+      ]);
+      const end = performance.now();
+      setLatency(Math.round(end - start));
+      setHealth(h);
+      setRules(r);
+    } catch {
+      setHealth({ status: 'offline' });
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    loadTelemetry();
+    const interval = setInterval(loadTelemetry, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const isApiOnline = health && health.status === 'ok';
+  const rulesCount = rules?.rules?.length || 15;
+  const brandsCount = rules?.brands_checked?.length || 14;
 
   const rows = [
-    { label: 'LAYER 1 // RULES', value: '42 loaded', online: true },
-    { label: 'LAYER 2 // LLM GUIDANCE', value: 'ONLINE', online: true },
-    { label: 'LINK INSPECTOR', value: 'ONLINE', online: true },
-    { label: 'AVG LATENCY', value: '142 ms', online: null },
-    { label: 'SESSION', value: sessionId, online: null },
+    {
+      label: 'API BACKEND',
+      value: isApiOnline ? 'CONNECTED' : (isLoading ? 'CONNECTING...' : 'OFFLINE'),
+      online: isApiOnline,
+    },
+    {
+      label: 'LAYER 1 // RULES ENGINE',
+      value: isApiOnline ? `${rulesCount} rules / ${brandsCount} brands` : 'STANDALONE',
+      online: isApiOnline,
+      onClick: onOpenRules,
+      clickable: Boolean(onOpenRules),
+    },
+    {
+      label: 'LAYER 2 // GEMINI AI',
+      value: health?.ai_explanations ? 'ACTIVE' : 'STANDALONE (RULES)',
+      online: health?.ai_explanations ? true : null,
+    },
+    {
+      label: 'REPUTATION / VT / GSB',
+      value: (health?.google_safe_browsing || health?.virustotal) ? 'ENABLED' : 'PASS-THROUGH',
+      online: (health?.google_safe_browsing || health?.virustotal) ? true : null,
+    },
+    {
+      label: 'HISTORY STORAGE',
+      value: health?.history ? 'SUPABASE CLOUD' : 'BROWSER STORAGE',
+      online: health?.history ? true : null,
+    },
+    {
+      label: 'LATENCY',
+      value: latency != null ? `${latency} ms` : '—',
+      online: null,
+    },
   ];
 
   return (
     <Card className="p-4 sm:p-5 space-y-4">
       {/* Header */}
-      <div className="flex items-center gap-2 border-b border-border-soc pb-3 mb-4">
-        <span className="flex h-7 w-7 items-center justify-center rounded-md bg-safe/15 text-safe">
-          <Activity size={15} aria-hidden="true" />
-        </span>
-        <div className="flex flex-1 items-center justify-between gap-2">
+      <div className="flex items-center justify-between border-b border-[#374151] pb-3 mb-4">
+        <div className="flex items-center gap-2">
+          <span className="flex h-7 w-7 items-center justify-center rounded-md bg-emerald-500/15 text-emerald-400">
+            <Activity size={15} aria-hidden="true" />
+          </span>
           <h2 className="text-xs font-mono uppercase tracking-widest text-ink/80">
-            ENGINE STATUS
+            ENGINE TELEMETRY
           </h2>
-          {SHOW_DEMO_STATS && <span className="rounded border border-warn/40 bg-warn/10 px-1.5 py-0.5 text-[10px] font-mono tracking-widest text-warn">DEMO DATA</span>}
         </div>
+        <button
+          type="button"
+          onClick={loadTelemetry}
+          disabled={isLoading}
+          aria-label="Refresh telemetry"
+          className="flex h-7 w-7 items-center justify-center rounded-md text-secondary hover:text-ink hover:bg-white/5 transition-colors disabled:opacity-40"
+        >
+          <RefreshCw size={13} className={isLoading ? 'animate-spin' : ''} />
+        </button>
       </div>
 
       {/* Status rows */}
-      <dl className="space-y-0 divide-y divide-border-soc">
-        {rows.map(({ label, value, online }) => (
-          <div key={label} className="flex items-center justify-between gap-3 py-2.5 min-w-0">
-            <dt className="font-mono text-xs text-muted-dim tracking-widest uppercase shrink-0">
+      <dl className="space-y-0 divide-y divide-[#374151]/50">
+        {rows.map(({ label, value, online, onClick, clickable }) => (
+          <div
+            key={label}
+            onClick={onClick}
+            className={`flex items-center justify-between gap-3 py-2.5 min-w-0 ${
+              clickable ? 'cursor-pointer hover:bg-white/5 px-1 -mx-1 rounded' : ''
+            }`}
+          >
+            <dt className="font-mono text-xs text-secondary tracking-widest uppercase shrink-0">
               {label}
             </dt>
             <dd className="flex items-center gap-1.5 font-mono text-[13px] text-ink tabular-nums">
-              {online === true && <StatusDot online />}
-              <span className={online === true ? 'text-safe' : 'text-ink'}>{value}</span>
+              {online != null && <StatusDot online={online} />}
+              <span className={online ? 'text-emerald-400' : 'text-ink'}>{value}</span>
             </dd>
           </div>
         ))}
       </dl>
 
-      {/* Dotted fill between label and value is handled by the flex justify-between */}
+      {onOpenRules && (
+        <button
+          type="button"
+          onClick={onOpenRules}
+          className="w-full text-center text-[11px] font-mono text-accent hover:text-accent-hover pt-1 border-t border-[#374151]/50 block"
+        >
+          Inspect all {rulesCount} detection rules &rarr;
+        </button>
+      )}
     </Card>
   );
 }

@@ -2,20 +2,27 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { SOCHeader } from './components/SOCHeader';
 import { WorkspaceView } from './components/WorkspaceView';
 import { ForensicDashboard } from './components/ForensicDashboard';
+import { RulesModal } from './components/RulesModal';
+import { HistoryModal } from './components/HistoryModal';
 import { Toast } from './components/ui/Toast';
-import IntroSplash from './components/IntroSplash';                    // ADDED
-import { analyzeMessage, SCAN_RESULT } from './data/mockData';
+import IntroSplash from './components/IntroSplash';
+import { scanMessage, fetchHistoryItem, adaptScanResponse } from './services/api';
+import { SCAN_RESULT, analyzeMessage } from './data/mockData';
 
-// ─── Validation constants ─────────────────────────────────────────────────────
-const MIN_LEN = 10;
+// Validation constants
+const MIN_LEN = 5;
 
 /** Initial banner status */
 const DEFAULT_STATUS = 'REVIEW REQUIRED — Analyst Action Needed';
 
 export default function App() {
   // ── Intro splash ──────────────────────────────────────────────────────────
-  const [showIntro, setShowIntro] = useState(false);                   // ADDED
-  const endIntro = useCallback(() => setShowIntro(false), []);         // ADDED
+  const [showIntro, setShowIntro] = useState(false);
+  const endIntro = useCallback(() => setShowIntro(false), []);
+
+  // ── Modals state ──────────────────────────────────────────────────────────
+  const [isRulesOpen, setIsRulesOpen] = useState(false);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
   // ── View toggle ───────────────────────────────────────────────────────────
   const [activeView, setActiveView] = useState('workspace');
@@ -34,20 +41,16 @@ export default function App() {
   // ── Toast state ───────────────────────────────────────────────────────────
   const [toast, setToast] = useState(null); // { message, tone }
 
-  // Timer refs for cleanup
-  const analyzeTimerRef = useRef(null);
-
-  // Clean up timers on unmount
-  useEffect(() => {
-    return () => {
-      if (analyzeTimerRef.current) clearTimeout(analyzeTimerRef.current);
-    };
+  const showToast = useCallback((message, tone = 'info') => {
+    setToast({ message, tone });
   }, []);
+
+  const dismissToast = useCallback(() => setToast(null), []);
 
   // ── Payload handlers ──────────────────────────────────────────────────────
   const handlePayloadChange = useCallback((val) => {
     setPayload(val);
-    if (error) setError(null);    // clear error on edit
+    if (error) setError(null);
     if (activeSampleId) setActiveSampleId(null);
   }, [error, activeSampleId]);
 
@@ -63,17 +66,17 @@ export default function App() {
     setError(null);
   }, []);
 
-  // ── Scan flow ─────────────────────────────────────────────────────────────
+  // ── Scan flow (Calls POST /api/scan) ───────────────────────────────────────
   const handleScan = useCallback(async () => {
     const trimmed = payload.trim();
 
     // Validation
     if (!trimmed) {
-      setError('Please paste a message to check.');
+      setError('Please paste a message or link to check.');
       return;
     }
     if (trimmed.length < MIN_LEN) {
-      setError('Please paste a longer message to check.');
+      setError('Please paste a message with at least 5 characters to check.');
       return;
     }
 
@@ -81,16 +84,33 @@ export default function App() {
     setIsAnalyzing(true);
 
     try {
-      const result = await analyzeMessage(trimmed);
+      // Real API Call to FastAPI backend: POST /api/scan
+      const result = await scanMessage(trimmed);
       setScanResult(result);
       setBannerStatus(DEFAULT_STATUS);
       setIsScanned(true);
       setActiveView('forensic');
+      showToast(`Scan complete: ${result.riskLevel.toUpperCase()} risk detected`, result.riskLevel === 'safe' ? 'success' : 'warn');
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (err) {
+      console.warn('API scan failed, attempting fallback demo analysis:', err);
+      // If server is completely unreachable, fallback to mock demo analyzer with a notification
+      try {
+        const fallback = await analyzeMessage(trimmed);
+        setScanResult(fallback);
+        setBannerStatus(DEFAULT_STATUS);
+        setIsScanned(true);
+        setActiveView('forensic');
+        showToast(`Backend unavailable: ${err.message}. Showing local demo analysis.`, 'warn');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (fallbackErr) {
+        setError(err.message || 'Scan failed. Please check your network or backend server.');
+        showToast(err.message || 'Scan failed. Please check your network or backend server.', 'warn');
+      }
     } finally {
       setIsAnalyzing(false);
     }
-  }, [payload]);
+  }, [payload, showToast]);
 
   // ── Reset / New Scan ──────────────────────────────────────────────────────
   const handleNewScan = useCallback(() => {
@@ -103,38 +123,34 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
-  // ── View toggle (header control) ──────────────────────────────────────────
-  const handleViewChange = useCallback((view) => {
-    setActiveView(view);
-    // If user jumps to forensic view without scanning, show default mock
-    if (view === 'forensic' && !isScanned) {
-      setScanResult(SCAN_RESULT);
-      setBannerStatus(DEFAULT_STATUS);
-    }
-  }, [isScanned]);
-
-  // ── Toast ─────────────────────────────────────────────────────────────────
-  const showToast = useCallback((message, tone = 'info') => {
-    setToast({ message, tone });
+  // ── Select past scan from History (GET /api/history/{id}) ─────────────────
+  const handleSelectRecentScan = useCallback((scan) => {
+    if (!scan) return;
+    setScanResult(scan);
+    setPayload(scan.payload || '');
+    setIsScanned(true);
+    setActiveView('forensic');
+    setBannerStatus(DEFAULT_STATUS);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
-
-  const dismissToast = useCallback(() => setToast(null), []);
 
   // ── Status update from CountermeasureBar ──────────────────────────────────
   const handleStatusChange = useCallback((status) => {
     setBannerStatus(status);
   }, []);
 
-  // ── Determine which view renders ──────────────────────────────────────────
   const showForensic = activeView === 'forensic';
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {showIntro && <IntroSplash onDone={endIntro} />}                 {/* ADDED */}
+    <div className="min-h-screen flex flex-col bg-[#0b0f19] text-[#f9fafb]">
+      {showIntro && <IntroSplash onDone={endIntro} />}
 
-      {isScanned && (
-        <SOCHeader activeView={activeView} onViewChange={handleViewChange} />
-      )}
+      {/* Persistent SOC Header across both views */}
+      <SOCHeader
+        onOpenHistory={() => setIsHistoryOpen(true)}
+        onOpenRules={() => setIsRulesOpen(true)}
+        onHome={handleNewScan}
+      />
 
       {showForensic ? (
         <ForensicDashboard
@@ -152,13 +168,29 @@ export default function App() {
           isAnalyzing={isAnalyzing}
           activeSampleId={activeSampleId}
           onSampleSelect={handleSampleSelect}
-          onClear={handleClear}
           onScan={handleScan}
-          onShowForensic={() => handleViewChange('forensic')}
+          onSelectRecentScan={handleSelectRecentScan}
+          onOpenHistoryModal={() => setIsHistoryOpen(true)}
+          onOpenRulesModal={() => setIsRulesOpen(true)}
+          onToast={showToast}
         />
       )}
 
-      {/* Global toast */}
+      {/* Rules and Scoring Modal (GET /api/rules) */}
+      <RulesModal
+        isOpen={isRulesOpen}
+        onClose={() => setIsRulesOpen(false)}
+      />
+
+      {/* History Modal (GET/DELETE /api/history) */}
+      <HistoryModal
+        isOpen={isHistoryOpen}
+        onClose={() => setIsHistoryOpen(false)}
+        onSelectScan={handleSelectRecentScan}
+        onToast={showToast}
+      />
+
+      {/* Global Toast */}
       {toast && (
         <Toast
           message={toast.message}
