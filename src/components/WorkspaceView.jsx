@@ -32,11 +32,12 @@ export function WorkspaceView({
         <h1 className="text-5xl font-bold tracking-tight text-[#f9fafb]">
           <DecryptedText
             text="Fraudora"
-            speed={60}
-            maxIterations={14}
+            speed={200}
             sequential
             revealDirection="start"
             animateOn="view"
+            effect="fade"
+            scrambleColor="#6366f1"
           />
         </h1>
       </div>
