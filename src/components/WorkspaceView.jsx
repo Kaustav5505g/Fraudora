@@ -47,7 +47,7 @@ export function WorkspaceView({
       <div aria-hidden="true" className="pointer-events-none absolute inset-0" style={BASE_GRID} />
       <div aria-hidden="true" className="pointer-events-none absolute inset-0" style={SPOTLIGHT_GRID} />
 
-      <div className="relative mb-8 flex items-center gap-3">
+      <div className="relative mb-3 flex items-center gap-3">
         <div className="grid h-12 w-12 place-items-center rounded-xl bg-indigo-500 shadow-[0_0_24px_rgba(99,102,241,0.35)]">
           <ShieldCheck className="h-7 w-7 text-white" aria-hidden="true" />
         </div>
@@ -63,6 +63,10 @@ export function WorkspaceView({
           />
         </h1>
       </div>
+
+      <p className="relative mb-8 text-sm text-[#9ca3af]">
+        Paste a message. See exactly how it tricks you.
+      </p>
 
       <div className="relative w-full">
         <PillSearch
