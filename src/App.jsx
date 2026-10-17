@@ -3,6 +3,7 @@ import { SOCHeader } from './components/SOCHeader';
 import { WorkspaceView } from './components/WorkspaceView';
 import { ForensicDashboard } from './components/ForensicDashboard';
 import { Toast } from './components/ui/Toast';
+import IntroSplash from './components/IntroSplash';                    // ADDED
 import { analyzeMessage, SCAN_RESULT } from './data/mockData';
 
 // ─── Validation constants ─────────────────────────────────────────────────────
@@ -12,6 +13,10 @@ const MIN_LEN = 10;
 const DEFAULT_STATUS = 'REVIEW REQUIRED — Analyst Action Needed';
 
 export default function App() {
+  // ── Intro splash ──────────────────────────────────────────────────────────
+  const [showIntro, setShowIntro] = useState(false);                   // ADDED
+  const endIntro = useCallback(() => setShowIntro(false), []);         // ADDED
+
   // ── View toggle ───────────────────────────────────────────────────────────
   const [activeView, setActiveView] = useState('workspace');
 
@@ -125,6 +130,8 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      {showIntro && <IntroSplash onDone={endIntro} />}                 {/* ADDED */}
+
       {isScanned && (
         <SOCHeader activeView={activeView} onViewChange={handleViewChange} />
       )}
