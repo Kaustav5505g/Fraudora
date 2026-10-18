@@ -17,7 +17,7 @@ const DEFAULT_STATUS = 'REVIEW REQUIRED — Analyst Action Needed';
 
 export default function App() {
   // ── Intro splash ──────────────────────────────────────────────────────────
-  const [showIntro, setShowIntro] = useState(false);
+  const [showIntro, setShowIntro] = useState(true);
   const endIntro = useCallback(() => setShowIntro(false), []);
 
   // ── Modals state ──────────────────────────────────────────────────────────

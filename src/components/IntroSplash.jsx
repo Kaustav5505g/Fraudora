@@ -2,21 +2,21 @@ import React, { useEffect } from 'react';
 
 export default function IntroSplash({ onDone }) {
   useEffect(() => {
-    const t = setTimeout(onDone, 7000); // safety: never block the app
+    const t = setTimeout(onDone, 15000); // safety: never block the app
     return () => clearTimeout(t);
   }, [onDone]);
 
   return (
     <div className="fixed inset-0 z-50 grid place-items-center bg-[#0b0f19]">
       <video
-        src="/intro.mp4"
+        src="/fraudora_vid.mp4"
         autoPlay
         muted
         playsInline
         preload="auto"
         onEnded={onDone}
         onError={onDone}
-        className="h-full w-full object-cover"
+        className="h-full w-full object-contain"
       />
       <button
         onClick={onDone}
