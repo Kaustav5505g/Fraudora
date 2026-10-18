@@ -162,7 +162,6 @@ export default function App() {
           result={scanResult}
           bannerStatus={bannerStatus}
           onStatusChange={handleStatusChange}
-          onNewScan={handleNewScan}
           onBack={handleBack}
           onToast={showToast}
         />

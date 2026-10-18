@@ -12,7 +12,7 @@ export function ForensicDashboard({
   result,
   bannerStatus,
   onStatusChange,
-  onNewScan,
+  onBack,
   onToast,
 }) {
   void bannerStatus;
@@ -24,7 +24,7 @@ export function ForensicDashboard({
       aria-label="Message check result"
       className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-4 px-4 pb-8 pt-5 sm:px-6 sm:pt-8"
     >
-      <VerdictCard result={result} onNewScan={onNewScan} />
+      <VerdictCard result={result} onBack={onBack} />
       <WhatToDoNowCard result={result} onToast={onToast} />
 
       <div className="grid items-start gap-4 lg:grid-cols-2">

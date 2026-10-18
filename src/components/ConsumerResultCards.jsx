@@ -56,7 +56,7 @@ function ResultCard({ title, icon: Icon, children, className = '' }) {
   );
 }
 
-export function VerdictCard({ result, onNewScan }) {
+export function VerdictCard({ result, onBack }) {
   const risk = getRisk(result);
   const verdict = VERDICT_COPY[result.riskLevel] || VERDICT_COPY.suspicious;
   const Icon = result.riskLevel === 'safe'
@@ -89,7 +89,7 @@ export function VerdictCard({ result, onNewScan }) {
         </div>
         <button
           type="button"
-          onClick={onNewScan}
+          onClick={onBack}
           className="flex min-h-11 items-center justify-center rounded-xl border border-[#374151] bg-[#1f2937] px-4 text-sm font-semibold text-secondary transition-colors hover:bg-[#374151] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         >
           Check another message
