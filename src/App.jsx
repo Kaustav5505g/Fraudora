@@ -123,6 +123,11 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
+  const handleBack = useCallback(() => {
+    setActiveView('workspace');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
   // ── Select past scan from History (GET /api/history/{id}) ─────────────────
   const handleSelectRecentScan = useCallback((scan) => {
     if (!scan) return;
@@ -158,6 +163,7 @@ export default function App() {
           bannerStatus={bannerStatus}
           onStatusChange={handleStatusChange}
           onNewScan={handleNewScan}
+          onBack={handleBack}
           onToast={showToast}
         />
       ) : (
