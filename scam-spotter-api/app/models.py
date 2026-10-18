@@ -45,6 +45,21 @@ class Finding(BaseModel):
     advice: str
     matches: list[Span]
     details: list[str] = []
+    group: str = ""
+    sub_category: str = ""
+    base_points: int = 0              # points before a signature moved them
+    moved_to: Optional[str] = None    # signature id that absorbed this rule's points
+
+
+class SignatureHit(BaseModel):
+    id: str
+    label: str
+    group: str
+    sub_category: str
+    points: int       # total now carried by the signature (moved + bonus)
+    bonus: int
+    moved: int        # points taken from the weaker rules
+    absorbed: list[str]
 
 
 class LinkReport(BaseModel):
@@ -84,12 +99,15 @@ class ScanResponse(BaseModel):
     headline: str
     thresholds: Thresholds
     findings: list[Finding]
+    category_scores: dict[str, int] = {}     # points per broad group, after signatures
+    signatures: list[SignatureHit] = []
     segments: list[Segment]
     links: list[LinkReport]
     reassurances: list[str]
     caveats: list[str]
     summary: str
     ai_summary: Optional[str] = None
+    known_match: Optional[dict] = None     # {id,label,ratio,points} when a known scam matched
     next_steps: list[str]
     report: dict
     disclaimer: str

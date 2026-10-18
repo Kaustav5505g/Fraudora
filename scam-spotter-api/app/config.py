@@ -28,6 +28,15 @@ class Settings(BaseSettings):
     cors_origins: str = "*"
     max_message_chars: int = 5000
 
+    # Dynamic rules & known-scam library (loaded from Supabase)
+    dynamic_rules_enabled: bool = True
+    config_cache_ttl_s: float = 60.0
+    known_scam_min_shared: int = 3
+    known_scam_threshold: float = 0.80      # sequence similarity to count as a match
+    known_scam_strong_threshold: float = 0.90
+    known_scam_points: int = 40             # points for a likely match
+    known_scam_strong_points: int = 60      # points for a strong match (High Risk on its own)
+
     # Risk bands (from the problem statement: Low 0-29, Medium 30-59, High 60-100)
     safe_max: int = 29
     suspicious_max: int = 59

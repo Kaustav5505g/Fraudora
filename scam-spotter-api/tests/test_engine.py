@@ -215,3 +215,166 @@ def test_gemini_failure_keeps_rule_result():
         return httpx.Response(500, json={})
     r = run(PDF_SAMPLE, _settings(gemini_api_key="G"), handler)
     assert r.ai_summary is None and r.level == "high_risk" and r.summary
+
+
+# ---------------------------------------------------------------- scam-type signatures
+TRADEPLUS = ("Name VIP Email Claim: Recd:RS.35,207 Bal: Rs.95,619 Mobile No 91***4006 Country India "
+             "Prefered Time 25/Aug Check now: bit.ly/3SPJG9s Tradeplus")
+
+
+def test_fake_credit_lure_is_high_risk_and_moves_points():
+    r = run(TRADEPLUS)
+    assert r.level == "high_risk" and r.score >= 60
+    pts = {f.rule_id: f.points for f in r.findings}
+    # the weak rules gave their points to the signature (moved, not double counted)
+    assert pts["shortened_url"] == 0 and pts["click_cta"] == 0
+    assert pts["money_claim_bait"] == 20 and pts["sig_fake_credit"] == 15 + 10 + 25
+    assert r.raw_score == sum(pts.values()) == r.score
+    assert r.category_scores == {"lure": r.score}
+    assert [s.id for s in r.signatures] == ["sig_fake_credit"]
+    assert next(f for f in r.findings if f.rule_id == "shortened_url").moved_to == "sig_fake_credit"
+
+
+def test_investment_lure_with_link_is_high_risk():
+    r = run("Join our WhatsApp group for guaranteed profit stock tips bit.ly/abc")
+    assert r.level == "high_risk" and "sig_investment_lure" in ids(r)
+
+
+def test_single_weak_rules_never_fire_a_signature():
+    for msg in ("Click here to track your order: https://www.amazon.in/track",
+                "Rs 5000 credited to A/c XX1234 on 12-Oct. Bal Rs 20000. -SBI",
+                "Check this out: bit.ly/abc"):
+        r = run(msg)
+        assert r.level == "safe" and not r.signatures, msg
+
+
+def test_groups_are_the_broad_buckets():
+    r = run(PDF_SAMPLE)
+    assert r.category_scores == {"threat": 15, "pressure": 20, "link": 25, "request": 40}
+    assert r.score == 100
+
+
+# ---------------------------------------------------------------- real scam messages (tests/data)
+def _corpus():
+    import json, pathlib
+    return json.loads((pathlib.Path(__file__).parent / "data" / "scam_corpus.json").read_text(encoding="utf-8"))
+
+
+def test_every_real_scam_in_the_corpus_is_high_risk():
+    bad = [(m[:40], r.score) for m in _corpus() if (r := run(m)).level != "high_risk"]
+    assert not bad, bad
+
+
+def test_fake_notice_with_short_link_moves_points():
+    r = run("Dear user A/c 6394314006 received Rs.3875 Balance Rs.5323 Check account details bit.ly/4hUMrQA")
+    pts = {f.rule_id: f.points for f in r.findings}
+    assert pts["shortened_url"] == 0 and pts["sig_fake_notice"] > 0 and r.level == "high_risk"
+
+
+def test_job_offer_with_fee_and_utility_and_customs_scams():
+    assert "sig_job_fee" in ids(run("Selected for a work-from-home job, salary Rs 45,000/month. "
+                                    "Pay a refundable Rs 999 registration fee now."))
+    assert "bill_pretext" in ids(run("Your electricity connection will be disconnected tonight due to an unpaid bill."))
+    r = run("Pay Rs 45 clearance fee today: https://parcel-customs-fee.track-delivery.in/pay")
+    assert "suspicious_link" in ids(r)
+
+
+def test_upi_pin_verification_is_a_credential_request():
+    assert "credential_request" in ids(run("Claim your refund by verifying your UPI PIN"))
+
+
+NORMAL_MORE = [
+    "Rs 5000 credited to A/c XX1234 on 12-Oct. Bal Rs 20000. -SBI",
+    "Your Zomato order is out for delivery. Rider will reach in 10 minutes.",
+    "Your order #4412 has been shipped. Track it at https://www.amazon.in/track",
+    "Your electricity bill of Rs 800 is due on 20 Oct. Thank you.",
+    "Dear student, the timetable for semester exams is on the college notice board.",
+    "Your OTP is 482913. Do not share it with anyone.",
+]
+
+
+def test_more_normal_messages_stay_safe():
+    for m in NORMAL_MORE:
+        r = run(m)
+        assert r.level == "safe", (m, r.score, [f.rule_id for f in r.findings])
+
+
+# ---------------------------------------------------------------- dynamic rules & known-scam library
+import asyncio as _aio
+
+from app.engine.analyzer import analyze as _analyze
+from app.engine.dynamic import DynamicConfig, KeywordRule, Override
+from app.engine.matcher import best_match, prepare
+from app.engine.normalize import normalize
+
+
+def run_dyn(msg, dyn, settings=None):
+    s = settings or Settings(_env_file=None)
+
+    async def go():
+        async with httpx.AsyncClient() as http:
+            return await _analyze(sanitize(msg), s, http, dyn=dyn)
+    return _aio.run(go())
+
+
+def test_empty_dynamic_config_matches_code_defaults():
+    assert run_dyn(PDF_SAMPLE, DynamicConfig()).score == run(PDF_SAMPLE).score == 100
+
+
+def test_point_override_changes_score():
+    dyn = DynamicConfig(overrides={"otp_request": Override(points=10)})
+    r = run_dyn("Please share the OTP you received", dyn)
+    assert {f.rule_id: f.points for f in r.findings}["otp_request"] == 10
+
+
+def test_disabling_a_rule_removes_it():
+    base = run_dyn("bit.ly/abc", DynamicConfig())
+    assert "shortened_url" in ids(base) and base.score == 15
+    dyn = DynamicConfig(disabled=frozenset({"shortened_url"}))
+    r = run_dyn("bit.ly/abc", dyn)
+    assert "shortened_url" not in ids(r) and r.score == 0
+
+
+def test_database_keyword_rule_fires():
+    kw = KeywordRule(id="kw_test", label="Scam brand", category="bait", group="lure", sub="brand",
+                     points=30, why="Seen in scams.", advice="Ignore.", phrases=("tradeplus", "quickcash"))
+    r = run_dyn("Greetings from TradePlus", DynamicConfig(keyword_rules=(kw,)))
+    pts = {f.rule_id: f.points for f in r.findings}
+    assert pts.get("kw_test") == 30 and r.findings[0].group == "lure"
+
+
+def test_keyword_rule_respects_word_boundary():
+    kw = KeywordRule(id="kw_win", label="win", category="bait", group="lure", sub="", points=25,
+                     why="", advice="", phrases=("win",), word_boundary=True)
+    assert "kw_win" not in ids(run_dyn("The windows are open", DynamicConfig(keyword_rules=(kw,))))
+    assert "kw_win" in ids(run_dyn("You win a prize", DynamicConfig(keyword_rules=(kw,))))
+
+
+def _library():
+    corpus = _corpus()
+    labels = [f"scam {i}" for i in range(len(corpus))]
+    return tuple(prepare(f"s{i}", labels[i], corpus[i]) for i in range(len(corpus)))
+
+
+def test_known_scam_variant_is_matched_and_high_risk():
+    lib = _library()
+    variant = ("DearStaff Your account 1112223334 Date:01/01 Time:09:00 received Rs.9999 "
+               "Balance Rs.1234 Check account details bit.ly/zzz111 StXavier")
+    r = run_dyn(variant, DynamicConfig(known=lib))
+    assert r.known_match is not None and r.known_match["ratio"] >= 0.80
+    assert "known_scam_match" in ids(r) and r.level == "high_risk"
+
+
+def test_known_scam_library_does_not_flag_genuine_messages():
+    lib = _library()
+    for m in NORMAL_MORE + ["Hi, are we still meeting at 5pm today?",
+                            "Your appointment with Dr Sharma is confirmed for 20 Oct at 11:00."]:
+        r = run_dyn(m, DynamicConfig(known=lib))
+        assert r.known_match is None, (m, r.known_match)
+        assert r.level == "safe", (m, r.score)
+
+
+def test_normalizer_strips_variable_parts():
+    n = normalize("Recd Rs.35,207 on 25/Aug A/c 91***4006 at bit.ly/abc call 1930")
+    assert "<amt>" in n and "<num>" in n and "<date>" in n and "<link>" in n
+    assert "35,207" not in n and "bit.ly" not in n

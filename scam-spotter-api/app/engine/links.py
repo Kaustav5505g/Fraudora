@@ -32,7 +32,8 @@ SUSPICIOUS_TLDS = {
     "loan", "win", "bid", "monster", "cyou", "tk", "ml", "cf", "ga", "gq", "zip", "mov", "pw",
 }
 SCAM_WORDS = {"kyc", "verify", "verification", "update", "secure", "login", "refund", "reward", "claim",
-              "prize", "bonus", "unblock", "reactivate", "suspended", "alert"}
+              "prize", "bonus", "unblock", "reactivate", "suspended", "alert", "pay", "payment", "bill",
+              "fee", "fees", "customs", "clearance", "delivery", "parcel", "track", "tracking", "now"}
 _SUFFIXES = {"bank", "kyc", "update", "verify", "secure", "login", "online", "care", "support", "alert",
              "card", "pay", "refund", "netbanking", "customer", "service", "help", "india", "app",
              "rewards", "reward", "offer", "offers", "track", "tracking", "parcel", "delivery", "post"}

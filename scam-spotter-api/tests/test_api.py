@@ -3,6 +3,8 @@ import uuid
 import pytest
 from fastapi.testclient import TestClient
 
+from app.config import Settings
+from app.db import HistoryStore
 from app.main import _store, app
 from tests.test_engine import PDF_SAMPLE
 
@@ -86,8 +88,14 @@ def test_history_header_validation(client):
 
 
 def test_history_not_configured_returns_503():
+    # Force an unconfigured server regardless of any local .env.
     app.dependency_overrides.clear()
-    c = TestClient(app)
-    r = c.get("/api/history", headers={"X-Client-Id": CID})
-    assert r.status_code == 503 and "not configured" in r.json()["error"]["message"]
-    assert c.post("/api/scan", json={"message": "hi"}, headers={"X-Client-Id": CID}).json()["saved"] is False
+    unconfigured = HistoryStore(Settings(_env_file=None, supabase_url="", supabase_service_role_key=""))
+    app.dependency_overrides[_store] = lambda: unconfigured
+    try:
+        c = TestClient(app)
+        r = c.get("/api/history", headers={"X-Client-Id": CID})
+        assert r.status_code == 503 and "not configured" in r.json()["error"]["message"]
+        assert c.post("/api/scan", json={"message": "hi"}, headers={"X-Client-Id": CID}).json()["saved"] is False
+    finally:
+        app.dependency_overrides.clear()

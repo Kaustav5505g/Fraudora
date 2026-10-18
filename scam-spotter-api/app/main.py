@@ -14,6 +14,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from .config import Settings, get_settings
 from .db import HistoryStore, StoreError
 from .engine.analyzer import analyze
+from .engine.dynamic import load as load_dynamic
 from .engine.brands import BRANDS
 from .engine.rules import RULES
 from .models import CLIENT_ID_RE, ScanRequest, ScanResponse
@@ -83,13 +84,24 @@ def root():
 
 
 @app.get("/health")
-def health(s: Settings = Depends(get_settings)):
+async def health(s: Settings = Depends(get_settings)):
+    dyn_info: dict = {"dynamic_rules": s.dynamic_rules_enabled}
+    if s.dynamic_rules_enabled and s.supabase_url and s.supabase_service_role_key:
+        try:
+            async with httpx.AsyncClient() as http:
+                dyn = await load_dynamic(s, http)
+            dyn_info.update(known_scam_library=len(dyn.known),
+                            extra_keyword_rules=len(dyn.keyword_rules),
+                            rule_overrides=len(dyn.overrides), rules_disabled=len(dyn.disabled))
+        except Exception as e:  # noqa: BLE001
+            dyn_info["dynamic_rules_error"] = str(e)[:200]
     return {
         "status": "ok",
         "history": bool(s.supabase_url and s.supabase_service_role_key),
         "ai_explanations": bool(s.gemini_api_key),
         "google_safe_browsing": bool(s.google_safe_browsing_api_key),
         "virustotal": bool(s.virustotal_api_key),
+        **dyn_info,
     }
 
 
@@ -110,15 +122,36 @@ async def scan(req: ScanRequest, x_client_id: ClientHeader = None,
 
 
 @app.get("/api/rules")
-def rules(s: Settings = Depends(get_settings)):
+async def rules(s: Settings = Depends(get_settings)):
     """Every rule and its points, so the scoring is visible and explainable."""
+    dyn = None
+    if s.dynamic_rules_enabled and s.supabase_url and s.supabase_service_role_key:
+        try:
+            async with httpx.AsyncClient() as http:
+                dyn = await load_dynamic(s, http)
+        except Exception:  # noqa: BLE001
+            dyn = None
+    ov = dyn.overrides if dyn else {}
+    disabled = dyn.disabled if dyn else frozenset()
+
+    def pts(r):
+        o = ov.get(r.id)
+        return o.points if (o and o.points is not None) else r.points
+
+    code_rules = [{"id": r.id, "label": r.label, "category": r.category, "group": r.group,
+                   "points": pts(r), "severity": r.severity, "why": r.why,
+                   "enabled": r.id not in disabled, "kind": "code"} for r in RULES.values()]
+    kw_rules = [{"id": k.id, "label": k.label, "category": k.category, "group": k.group,
+                 "points": k.points, "why": k.why, "enabled": True, "kind": "keyword",
+                 "phrases": list(k.phrases)} for k in (dyn.keyword_rules if dyn else ())]
     return {
         "thresholds": {"safe": [0, s.safe_max], "suspicious": [s.safe_max + 1, s.suspicious_max],
                        "high_risk": [s.suspicious_max + 1, 100]},
         "max_score": 100,
-        "how_it_works": "Each rule that matches adds its points once. Points are added up and capped at 100.",
-        "rules": [{"id": r.id, "label": r.label, "category": r.category, "points": r.points,
-                   "severity": r.severity, "why": r.why} for r in RULES.values()],
+        "how_it_works": "Each rule that matches adds its points once. Points are added up and capped at 100. "
+                        "Points and on/off come from the database when configured.",
+        "rules": code_rules + kw_rules,
+        "known_scam_library": len(dyn.known) if dyn else 0,
         "brands_checked": [{"name": b.name, "kind": b.kind, "official_domains": list(b.domains)}
                            for b in BRANDS],
     }
