@@ -16,7 +16,7 @@ export default function IntroSplash({ onDone }) {
         preload="auto"
         onEnded={onDone}
         onError={onDone}
-        className="h-full w-full object-cover"
+        className="h-full w-full object-contain"
       />
       <button
         onClick={onDone}
