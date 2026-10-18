@@ -1,277 +1,187 @@
 # Fraudora
 
-Stop scams before users act.
+<p align="center">
+  <strong>Understand suspicious messages before you act.</strong><br />
+  Fraudora analyzes SMS and message text, explains warning signs, and offers safer next steps.
+</p>
+
+<p align="center">
+  <img alt="React 19" src="https://img.shields.io/badge/React-19-149ECA?logo=react&logoColor=white" />
+  <img alt="Vite" src="https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white" />
+  <img alt="Tailwind CSS" src="https://img.shields.io/badge/Tailwind_CSS-3-06B6D4?logo=tailwindcss&logoColor=white" />
+  <img alt="FastAPI" src="https://img.shields.io/badge/FastAPI-Python-009688?logo=fastapi&logoColor=white" />
+  <img alt="License not specified" src="https://img.shields.io/badge/license-not%20specified-lightgrey.svg" />
+</p>
 
 ## Overview
 
-Fraudora is a front-end prototype for examining suspicious SMS and message content. Phishing and impersonation scams target students and families with manufactured urgency and familiar names. Instead of presenting only an opaque warning, Fraudora's forensic view is designed to show the message, highlight risk terms, and explain the deception behind the warning.
+Fraudora is a full-stack scam-message analysis application. Its React frontend provides a workspace for scanning suspicious messages and reviewing results. The FastAPI backend applies explainable rules and link analysis, then returns a risk score, findings, and practical guidance. Optional integrations can add AI explanations, URL reputation checks, and persistent scan history.
 
-The current scan flow is a mock: it waits briefly and returns the same sample result for every valid input. It does not identify scams in submitted messages.
+The rules engine determines the score. Optional AI generates explanations and does not change the score. External integrations are configured on the backend and are not required for basic scanning.
 
-## Features
+## Key features
 
-### Workspace / Triage View
+- Scan pasted message text and review a risk score with matched indicators.
+- Highlight suspicious message segments and explain why each finding matters.
+- Inspect links and show reputation caveats without treating an unverified domain as automatically malicious.
+- Provide practical next steps and fraud-reporting guidance.
+- View available scoring rules and thresholds.
+- Browse recent scans; history can use local browser storage or optional Supabase persistence.
+- Optionally enrich results with Gemini explanations, Google Safe Browsing, and VirusTotal.
+- Keep the interface responsive and present submitted URLs as non-clickable text.
 
-- Paste or edit a message payload, with a 1,600-character limit and empty/short-input validation.
-- Inspect live character, estimated SMS segment, and URL counts; detected URLs are shown as defanged text.
-- Load one of five built-in sample messages, spanning the displayed safe, suspicious, and critical categories.
-- Start a simulated scan with the button or `Ctrl+Enter` / `Cmd+Enter`.
-- View static engine-status values and a four-row mock recent-scan list.
-- Switch to the forensic view at any time; before a scan, it displays the default mock result.
+## Risk levels
 
-### Forensic Dashboard View
+| Signal | Score | Color | Meaning |
+|---|---:|---|---|
+| 🟢 **Safe** | 0–29 | Green | No strong scam indicators were found. Stay cautious with unexpected messages. |
+| 🟡 **Suspicious** | 30–59 | Amber | Warning signs are present. Verify the sender through a trusted channel. |
+| 🔴 **High Risk** | 60–100 | Red | Multiple or serious indicators suggest a likely scam. Do not respond or follow the message's instructions. |
 
-- Review the mock risk score, message ID, and analyst status; copy the message ID or start a new scan.
-- Inspect message metadata, triggered rule indicators and weights, and threat taxonomy including a link to the MITRE ATT&CK technique.
-- Read the payload with selected terms highlighted. URLs are rendered as non-clickable text marked `DEFANGED`.
-- See a static link-analysis summary and suggested guidance.
-- Try local Quarantine, Block Sender, Mark Safe (two-click confirmation), and Escalate controls. They update the banner and show a toast; they do not contact a service or perform those actions on a message.
-
-## Traffic-light trust system
-
-| Level | Color | Meaning in the interface |
-|---|---|---|
-| Safe | `#10B981` | Low-risk / safe |
-| Suspicious | `#F59E0B` | Medium-risk / suspicious |
-| Critical | `#EF4444` | High-risk / critical |
+Scores are capped at 100. The backend's rules and thresholds are available from `GET /api/rules`.
 
 ## Tech stack
 
-Versions below are the dependency ranges declared in `package.json` (the lockfile resolves specific releases).
+### Frontend
 
-| Technology | Declared version | Use |
-|---|---:|---|
-| React | `^19.2.8` | UI |
-| React DOM | `^19.2.8` | Browser rendering |
-| Vite | `^8.3.0` | Development server and build |
-| Tailwind CSS | `^3.4.19` | Utility styling |
-| Lucide React | `^1.58.0` | Icons |
-| `@vitejs/plugin-react` | `^6.1.1` | Vite React integration |
-| Oxlint | `^1.81.0` | Linting |
-| PostCSS / Autoprefixer | `^8.5.30` / `^10.6.1` | CSS processing |
+| Technology | Role |
+|---|---|
+| React 19 | User interface |
+| Vite | Development server and production build |
+| Tailwind CSS | Utility-first styling |
+| Lucide React | Icons |
+| Oxlint | Linting |
 
-The page also requests Inter and JetBrains Mono from Google Fonts in `index.html`; system-font fallbacks are configured for the interface.
+### Backend
 
-## Getting started
-
-### Prerequisites
-
-- Node.js `^20.19.0` or `>=22.12.0`, as required by the locked Vite release.
-- npm.
-
-### Install dependencies
-
-```bash
-npm ci
-```
-
-### Run the development server
-
-```bash
-npm run dev
-```
-
-### Create a production build
-
-```bash
-npm run build
-```
-
-### Preview the production build
-
-```bash
-npm run preview
-```
-
-The available lint script is:
-
-```bash
-npm run lint
-```
-
-There is no test script configured in `package.json`.
+| Technology | Role |
+|---|---|
+| Python 3.13+ | Backend runtime |
+| FastAPI | REST API and OpenAPI documentation |
+| Pydantic Settings | Typed configuration from environment variables |
+| HTTPX | Async HTTP requests for optional integrations |
+| pytest | Backend tests |
+| Supabase (optional) | Persisted scan history and dynamic rule data |
+| Gemini, Google Safe Browsing, VirusTotal (optional) | Explanation and link-reputation integrations |
 
 ## Project structure
 
 ```text
-src/
-├── App.jsx                          # View routing, application state, validation, and mocked scan flow
-├── index.css                        # Global styles, dark background, scrollbar, and motion preferences
-├── main.jsx                         # React entry point
-├── assets/
-│   ├── hero.png                     # Image asset; not referenced by the current UI
-│   └── vite.svg                     # Vite template asset
-├── components/
-│   ├── ActionableGuidanceBox.jsx    # Mock directive, explanation, and countermeasure list
-│   ├── CountermeasureBar.jsx        # Local-only analyst action buttons
-│   ├── EngineStatusPanel.jsx        # Static engine status display and generated session label
-│   ├── ForensicDashboard.jsx        # Forensic report layout
-│   ├── HeroHeader.jsx               # Workspace introduction
-│   ├── LinkAnalysisInspector.jsx    # Static domain summary
-│   ├── MessageOverviewCard.jsx      # Message metadata display
-│   ├── PayloadForensicView.jsx      # Highlighted payload and non-clickable URL display
-│   ├── PayloadInputBox.jsx          # Message input, validation presentation, and live readout
-│   ├── QuickTestChips.jsx           # Built-in sample-message selector
-│   ├── RecentScans.jsx              # Static recent-scan list
-│   ├── RiskIndicatorsList.jsx       # Triggered mock rule explanations and weights
-│   ├── SOCHeader.jsx                # Header, UTC clock, and view toggle
-│   ├── ScanButton.jsx               # Scan action and simulated progress presentation
-│   ├── TaxonomyBadgeGroup.jsx       # Threat classification and MITRE ATT&CK link
-│   ├── TriageBanner.jsx             # Risk score, message ID, status, and new-scan control
-│   ├── WorkspaceView.jsx            # Workspace layout and keyboard shortcut handler
-│   └── ui/
-│       ├── Badge.jsx                # Shared badge primitive
-│       ├── Card.jsx                 # Shared card primitive
-│       └── Toast.jsx                # Auto-dismissing notification
-├── data/
-│   └── mockData.js                  # Risk labels, sample messages, recent scans, and default result
-└── hooks/
-    └── useUtcClock.js               # Live UTC clock hook
+.
+├── index.html
+├── package.json
+├── package-lock.json
+├── vite.config.js
+├── tailwind.config.js
+├── postcss.config.js
+├── public/                         # Static assets served by Vite
+├── src/                            # React frontend
+│   ├── App.jsx                     # App state and scan/view flow
+│   ├── main.jsx                   # React entry point
+│   ├── index.css                  # Global styles
+│   ├── assets/
+│   ├── components/                # Workspace, dashboard, modals, and UI
+│   ├── data/                      # Display data and sample messages
+│   ├── hooks/
+│   └── services/
+│       └── api.js                 # Backend API client and local history fallback
+└── scam-spotter-api/              # FastAPI backend
+    ├── api/
+    │   └── index.py               # Vercel entry point
+    ├── app/
+    │   ├── main.py                # FastAPI routes
+    │   ├── config.py              # Environment-backed settings
+    │   ├── db.py                  # Optional history persistence
+    │   ├── models.py              # Request and response models
+    │   └── engine/                # Scoring, link analysis, and explanations
+    ├── tests/                     # Backend test suite
+    ├── .env.example               # Backend configuration template
+    ├── pyproject.toml
+    ├── requirements.txt
+    └── supabase_schema.sql
 ```
 
-## State management
+## Local setup
 
-`App.jsx` keeps application state in React `useState`; there is no external state library.
+You will need Node.js and npm for the frontend, and Python 3.13 or newer for the backend. Start the API and frontend in separate terminals.
 
-| State variable | Initial value | Purpose |
+### 1. Start the backend
+
+From the repository root:
+
+```powershell
+cd scam-spotter-api
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements-dev.txt
+Copy-Item .env.example .env
+uvicorn app.main:app --reload
+```
+
+The API runs at `http://localhost:8000`. Interactive API documentation is at `http://localhost:8000/docs`.
+
+On macOS/Linux, use these activation and environment-file commands instead:
+
+```bash
+source .venv/bin/activate
+cp .env.example .env
+```
+
+The integrations are optional; leave their settings empty to run the rules-based scanner without them. Configure `CORS_ORIGINS` if the frontend is served from an origin other than the local Vite setup.
+
+### 2. Start the frontend
+
+In a second terminal, from the repository root:
+
+```bash
+npm ci
+npm run dev
+```
+
+Open the local URL printed by Vite (normally `http://localhost:5173`). Vite proxies `/api` and `/health` requests to `http://localhost:8000`. To use a different API host, set `VITE_API_BASE_URL` in a root `.env` file.
+
+### Other frontend commands
+
+```bash
+npm run lint
+npm run build
+npm run preview
+```
+
+### Run backend tests
+
+From `scam-spotter-api/` with the virtual environment active:
+
+```bash
+pytest
+```
+
+## API overview
+
+| Method | Endpoint | Description |
 |---|---|---|
-| `activeView` | `'workspace'` | Selects the workspace or forensic dashboard |
-| `payload` | `''` | Current message text |
-| `activeSampleId` | `null` | Selected built-in sample |
-| `error` | `null` | Input validation message |
-| `isAnalyzing` | `false` | Simulated scan loading state |
-| `isScanned` | `false` | Tracks whether the scan handler completed |
-| `scanResult` | `SCAN_RESULT` | Current forensic data; initialized to the mock result |
-| `bannerStatus` | Default review-required message | Dashboard status, changed by local countermeasure controls |
-| `toast` | `null` | Current transient notification (`message` and `tone`) |
+| `POST` | `/api/scan` | Analyze a message. Send `X-Client-Id` to save it to configured history. |
+| `GET` | `/api/rules` | Return active scoring rules, thresholds, and brand data. |
+| `GET` | `/api/history` | List scans for the supplied client ID. |
+| `GET` | `/api/history/{id}` | Retrieve a saved scan. |
+| `DELETE` | `/api/history/{id}` | Delete one saved scan. |
+| `DELETE` | `/api/history` | Delete all saved scans for the client. |
+| `GET` | `/health` | Report API and optional integration status. |
 
-Individual components also use local state for presentation, including countermeasure button status, confirmation, toast dismissal, and the current header clock.
+The API does not require a client ID to scan a message. A client ID is required for history operations. See the backend's interactive `/docs` page for request and response schemas.
 
-## Design tokens
+## Privacy and safety
 
-Custom Tailwind theme values declared in `tailwind.config.js`:
+- Do not send real passwords, PINs, OTPs, or other sensitive personal information when testing.
+- Supabase, Gemini, Google Safe Browsing, and VirusTotal require backend configuration. Review their data handling policies before enabling them; message text or links may be sent to the configured external service.
+- Keep service-role keys and API keys on the backend. Never expose them in frontend environment variables or commit them to source control.
+- A scan is guidance, not a guarantee. Verify account or payment issues by contacting the organization through a trusted number or website.
 
-| Token | Value |
+## Team
+
+**Core2Duo**
+
+| Team member | Role |
 |---|---|
-| `obsidian` | `#0F1115` |
-| `surface` | `#1A1D24` |
-| `border-soc` | `#2A2E39` |
-| `ink` | `#F0F2F5` |
-| `muted` | `#9CA3AF` |
-| `muted-dim` | `#525866` |
-| `safe` | `#10B981` |
-| `warn` | `#F59E0B` |
-| `crit` | `#EF4444` |
-| `font-sans` | Inter, system UI, sans-serif |
-| `font-mono` | JetBrains Mono, UI monospace, SFMono-Regular, Menlo, monospace |
-| `animate-fade-in` | `fadeIn`, 200 ms ease-out |
-| `animate-slide-up` | `slideUp`, 200 ms ease-out |
-
-Global CSS also honors `prefers-reduced-motion`.
-
-## Backend integration
-
-The `analyzeMessage()` stub is in [`src/App.jsx`](src/App.jsx), at line 19. It currently ignores its payload argument, waits about 1,800 ms, then returns the unchanged `SCAN_RESULT` from [`src/data/mockData.js`](src/data/mockData.js). The comment at the stub identifies a future `POST /api/analyze` integration point; no backend request is implemented.
-
-The mock result defines this response contract:
-
-```ts
-type RiskLevel = 'safe' | 'suspicious' | 'critical';
-
-type ScanResult = {
-  messageId: string;
-  score: number; // Intended range: 0–100
-  riskLevel: RiskLevel;
-  payload: string;
-  overview: {
-    encoding: string;
-    segments: string;
-    language: string;
-    carrier: string;
-    direction: string;
-    source: string;
-  };
-  indicators: Array<{
-    id: string;
-    severity: string;
-    ruleName: string;
-    explanation: string;
-    weight: number;
-  }>;
-  taxonomy: {
-    primary: string;
-    secondary: string;
-    mitre: { id: string; label: string; url: string };
-  };
-  linkAnalysis: {
-    normalizedDomain: string;
-    reputation: string;
-    domainAge: string;
-    registrar: string;
-  };
-  guidance: {
-    directive: string;
-    explanation: string;
-    countermeasures: string[];
-  };
-  highlightTerms: string[];
-};
-```
-
-The UI expects these fields to be present. In the current prototype the response is fixed sample data, and countermeasure buttons only update React state and display a toast.
-
-## Security notes
-
-- Payload URLs in the input readout and forensic view are displayed as text, not rendered as clickable links. The forensic view labels them `DEFANGED`; it does not rewrite the URL shown in that view.
-- Payload highlighting and domain highlighting use React elements; the source does not use `dangerouslySetInnerHTML`.
-- The application does not persist entered payloads or scan results to browser storage or a server. Current results are in-memory mock data.
-- Link analysis is display-only: the application does not visit submitted URLs or query a reputation service.
-- The MITRE ATT&CK taxonomy link is a regular external link and opens in a new tab.
-- Google Fonts are requested by the page from Google Fonts. No payload is submitted to that service by the current implementation.
-
-## Accessibility and responsive behavior
-
-- The input is labeled, exposes validation with `aria-invalid` and an alert, and announces its live readout.
-- Buttons provide accessible names or pressed/busy states where appropriate, with visible keyboard-focus styling in the primary controls.
-- The main views, status notifications, score progress, and relevant lists use semantic regions and ARIA labels/live regions.
-- The workspace and dashboard use responsive grids that stack on smaller screens; the header changes labels and metadata layout at narrow widths.
-- Motion-reduction preferences are respected by global CSS and selected animated elements.
-
-## Known limitations and mock data
-
-- Every valid input receives the same hard-coded `SCAN_RESULT`; the displayed score, risk level, rules, taxonomy, link details, and advice are not computed from the submitted message.
-- The engine status panel, rule count, latency, recent scans, session label, and operational status strip are presentation-only values, not live telemetry.
-- The displayed carrier and metadata are part of the sample result, not detected from the input.
-- Quarantine, block, mark-safe, and escalation do not affect an SMS, sender, queue, or backend system.
-- The payload length cap is 1,600 characters. Segment count is an estimate based on fixed 160-character / 153-character thresholds, not encoding-aware SMS segmentation.
-- There is no backend, persistence, automated test script, or error UI for a failed backend call. The simulated scan currently resolves successfully with mock data.
-
-## Roadmap
-
-These are potential follow-up items, not implemented functionality.
-
-- [ ] Connect `analyzeMessage()` to a real analysis API and validate its response.
-- [ ] Replace static engine status and recent scans with live service data.
-- [ ] Connect countermeasure actions to authorized backend operations.
-- [ ] Add automated tests for validation, view transitions, and response rendering.
-- [ ] Review payload privacy, retention, and API error handling for a production deployment.
-
-## Screenshots
-
-Add screenshots at the paths below to replace these placeholders:
-
-![Workspace view placeholder](docs/workspace.png)
-
-![Forensic dashboard view placeholder](docs/forensic-dashboard.png)
-
-## Contributing
-
-Contributions are welcome. Open an issue to discuss substantial changes, and include a clear description and verification steps with pull requests.
-
-## License
-
-License: not specified. Add the project's license and update this section before redistribution.
-
----
-
-FRAUDORA // CORE2DUO — Kaustav Paul (Frontend Lead) & Shreyansh Tiwari (Backend Lead)
+| Kaustav Paul | Frontend Lead |
+| Shreyansh Tiwari | Backend Lead |
